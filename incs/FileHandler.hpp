@@ -6,7 +6,7 @@
 # include <stdexcept>
 # include "CryptoHandler.hpp"
 
-# define  OTP_OUTFILENAME	"ft_otp.key"
+# define OTP_OUTFILENAME	"ft_otp.key"
 
 enum	otp_e_modes
 {

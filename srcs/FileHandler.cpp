@@ -46,7 +46,17 @@ void 	FileHandler::saveKeyToOutFile(std::string key)
     std::ofstream	file(OTP_OUTFILENAME);
     // Check if the file is open
     if (!file) throw OpenFileException();
-	// Write the key value in the file
-	file << key;
+	// generate AES encrypted data to write to the file
+	std::string		cipher;
+	try {
+		cipher = CryptoHandler::encryptAES(key);
+		// CryptoHandler::decryptAES(cipher);
+
+	} catch (std::exception &e) {
+		std::cerr << "Error: while encrypting: " << e.what() << std::endl;
+	}
+	std::cout << " \nKEY encrypted: " << cipher << std::endl;
+	// Write the encrypted data in the file
+	file << cipher;
     file.close();
 }
