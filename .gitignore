@@ -1,3 +1,6 @@
+# Temp files
+.*.sw?
+
 # Prerequisites
 *.d
 
