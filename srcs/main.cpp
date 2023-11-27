@@ -13,12 +13,12 @@ void	otp_parse_argv(int argc, char *argv[], FileHandler *fileHandler)
 			"\033[31mexpecting ./ft_otp -<g/k> <key file>\033[0m");
 
 	if (argv[1][0] == '-') {
-		fileHandler->setFilename(argv[1]);
+		fileHandler->setFilename(argv[2]);
 		argv[1][1] == 'g' ?
 			fileHandler->setMode(OTP_MODE_SAVE_KEY) :
 			fileHandler->setMode(OTP_MODE_GEN_PWD);
 	} else {
-		fileHandler->setFilename(argv[2]);
+		fileHandler->setFilename(argv[1]);
 		argv[2][1] == 'g' ?
 			fileHandler->setMode(OTP_MODE_SAVE_KEY) :
 			fileHandler->setMode(OTP_MODE_GEN_PWD);
@@ -28,7 +28,8 @@ void	otp_parse_argv(int argc, char *argv[], FileHandler *fileHandler)
 void	otp_save_key(FileHandler *filehandler)
 {
 	try {
-		filehandler->openFile();
+		std::string key = filehandler->getKeyFromInFile();
+		filehandler->saveKeyToOutFile(key);
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 	}

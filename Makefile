@@ -1,6 +1,6 @@
 NAME				=	ft_otp
 CXX					=	c++
-CXXFLAGS			=	-Wall -Wextra -std=c++98 #-Werror
+CXXFLAGS			=	-Wall -Wextra #-Werror
 INCS				=	incs/
 
 #######################################

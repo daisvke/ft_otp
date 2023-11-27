@@ -3,7 +3,8 @@
 
 # include <iostream>
 # include <fstream>
-#include <stdexcept>
+# include <stdexcept>
+# include "CryptoHandler.hpp"
 
 # define  OTP_OUTFILENAME	"ft_otp.key"
 
@@ -26,13 +27,12 @@ class	FileHandler
 		otp_e_modes		getMode(void) const;
 
 		void			openFile();
-		void			saveKeyInFile();
-		void			searchKeyInFile();
+		std::string		getKeyFromInFile();
+		void			saveKeyToOutFile(std::string key);
 
 	private:
 		const char		*_fileName;
 		otp_e_modes		_mode;
-		std::fstream	_file;
 		char			*_key;
 
 

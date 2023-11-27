@@ -1,6 +1,11 @@
 # Temp files
 .*.sw?
 
+# Generated files
+ft_otp
+ft_otp.key
+/t*
+
 # Prerequisites
 *.d
 
