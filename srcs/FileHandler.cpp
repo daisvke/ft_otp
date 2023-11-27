@@ -37,7 +37,7 @@ std::string 	FileHandler::getKeyFromInFile()
 
 	if (CryptoHandler::isValidHexStr(key))
 		return key;
-	else throw InvalidHexException();
+	else throw CryptoHandler::InvalidHexException();
 }
 
 void 	FileHandler::saveKeyToOutFile(std::string key)

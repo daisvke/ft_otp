@@ -1,7 +1,9 @@
 NAME				=	ft_otp
 CXX					=	c++
-CXXFLAGS			=	-Wall -Wextra #-Werror
-INCS				=	incs/
+CXXFLAGS			=	-std=c++11 -Wall -Wextra #-Werror
+INCS				=	-I incs/
+LDFLAGS				=	-L. -lcryptopp
+INCS				+=	-I incs/cryptopp
 
 #######################################
 #				F I L E S			  #
@@ -30,11 +32,11 @@ OBJS				=	$(addprefix $(OBJS_DIR), $(OBJS_FILES))
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CXX) -o $(NAME) $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
-$(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp
 	mkdir -p $(OBJS_DIR)
-	$(CXX) -I $(INCS) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $<
 
 
 # C L E A N  &  O T H E R  R U L E S  #
