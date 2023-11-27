@@ -16,6 +16,16 @@ class	CryptoHandler
 		~CryptoHandler();
 
 		bool	static isValidHexStr(const std::string& str);
+
+	class InvalidHexException: public std::exception
+	{
+		public:
+			InvalidHexException() throw() {}
+			const char	*what() const throw() {
+				return "\033[31mString is not a hexadecimal key " \
+				"of at least 64 characters!"; }
+			~InvalidHexException() throw() {}
+	};
 };
 
 #endif

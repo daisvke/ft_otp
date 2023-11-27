@@ -39,12 +39,9 @@ class	FileHandler
 	class	OpenFileException: public std::exception
 	{
 		public:
-	
 		OpenFileException() throw() {}
 		const char	* what() const throw()
-		{
-			return "\033[31mFailed to open the file!\033[0m";
-		}
+		{ return "\033[31mFailed to open the file!\033[0m"; }
 		 ~OpenFileException() throw() {}
 	};
 };

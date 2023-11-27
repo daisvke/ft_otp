@@ -1,7 +1,7 @@
 # Temp files
 .*.sw?
 
-# Generated files
+# Test files
 ft_otp
 ft_otp.key
 /t*

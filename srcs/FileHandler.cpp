@@ -35,11 +35,9 @@ std::string 	FileHandler::getKeyFromInFile()
     // Print the content
     std::cout << "File Content: " << key << std::endl;
 
-	if (CryptoHandler::isValidHexStr(key)) {
-		std::cout << "YES";
+	if (CryptoHandler::isValidHexStr(key))
 		return key;
-	}
-	else std::cout << "NO";
+	else throw InvalidHexException();
 }
 
 void 	FileHandler::saveKeyToOutFile(std::string key)
