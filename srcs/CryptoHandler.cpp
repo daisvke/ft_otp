@@ -4,7 +4,8 @@ using namespace CryptoPP;
 CryptoHandler::CryptoHandler() {}
 CryptoHandler::~CryptoHandler() {}
 
-bool CryptoHandler::isValidHexStr(const std::string str) {
+bool CryptoHandler::isValidHexStr(const std::string str)
+{
     return !str.empty() &&
 		// Check if all characters are hex digits
 		std::all_of(str.begin(), str.end(), ::isxdigit) &&
@@ -12,19 +13,21 @@ bool CryptoHandler::isValidHexStr(const std::string str) {
 		str.size() >= OTP_MIN_KEY_STRENGTH;
 }
 
+SecByteBlock	convertStringToBytes(const char *str, int size)
+{
+    SecByteBlock	key(
+		reinterpret_cast<const CryptoPP::byte*>(str), size
+	);
+	return key;
+}
+
 std::string	CryptoHandler::encryptAES(std::string plain)
 {
+	// Convert macro key and initialization vector to the approriate data type
+    SecByteBlock	key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
+    SecByteBlock	iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
     HexEncoder		encoder(new FileSink(std::cout));
-	// Convert macro key to the approriate data type
-    SecByteBlock	key(
-		reinterpret_cast<const CryptoPP::byte*>(OTP_AES_KEY), OTP_AES_KEY_LEN
-	);
-	// Convert macro initialization vector to the approriate data type
-    SecByteBlock	iv(
-		reinterpret_cast<const CryptoPP::byte*>(OTP_AES_IV), OTP_AES_IV_LEN
-	);
-
-    std::string cipher;
+    std::string		cipher;
 
     std::cout << "plain text: " << plain << std::endl;
 
@@ -63,16 +66,12 @@ std::string	CryptoHandler::encryptAES(std::string plain)
 	return cipher;
 }
 
-// // // Function to perform AES decryption
+// Function to perform AES decryption
 std::string CryptoHandler::decryptAES(std::string &cipher)
 {
-	SecByteBlock	key(
-		reinterpret_cast<const CryptoPP::byte*>(OTP_AES_KEY), OTP_AES_KEY_LEN
-	);
-	// Convert macro initialization vector to the approriate data type
-    SecByteBlock	iv(
-		reinterpret_cast<const CryptoPP::byte*>(OTP_AES_IV), OTP_AES_IV_LEN
-	);
+	// Convert macro key and initialization vector to the approriate data type
+    SecByteBlock	key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
+    SecByteBlock	iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
     std::string		recovered;
 
     try
