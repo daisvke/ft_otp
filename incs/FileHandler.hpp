@@ -25,10 +25,10 @@ class	FileHandler
 		void			setMode(otp_e_modes mode);
 		// Getters
 		otp_e_modes		getMode(void) const;
-
-		void			openFile();
+		// Save key in outfile
 		std::string		getKeyFromInFile();
 		void			saveKeyToOutFile(std::string key);
+		// Generate new TOTP code
 
 	private:
 		const char		*_fileName;

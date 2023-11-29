@@ -1,14 +1,13 @@
 #include <iostream>
 #include "FileHandler.hpp"
 
-void	otp_parse_argv(int argc, char *argv[], FileHandler *fileHandler)
+void	parseArgv(int argc, char *argv[], FileHandler *fileHandler)
 {
-	if (argc != 3)
-        throw std::invalid_argument(
-			"\033[31mexpecting ./ft_otp -<option> <key file>\033[0m");
-	// If neither "-g" nor "-k" is found, that's an error
-	if ((argv[1][0] != '-' && argv[2][0] != '-') ||
-		(argv[1][1] != 'g' && argv[2][1] != 'k'))
+	if (argc != 3 ||
+		// If neither "-g" nor "-k" is found, that's an error
+		(argv[1][0] != '-' && argv[2][0] != '-') ||
+		((argv[1][1] != 'g' && argv[2][1] != 'g') &&
+		(argv[1][1] != 'k' && argv[2][1] != 'k')))
         throw std::invalid_argument(
 			"\033[31mexpecting ./ft_otp -<g/k> <key file>\033[0m");
 
@@ -25,7 +24,7 @@ void	otp_parse_argv(int argc, char *argv[], FileHandler *fileHandler)
 	}
 }
 
-void	otp_save_key(FileHandler *filehandler)
+void	saveKeyToOutFile(FileHandler *filehandler)
 {
 	try {
 		std::string key = filehandler->getKeyFromInFile();
@@ -35,19 +34,31 @@ void	otp_save_key(FileHandler *filehandler)
 	}
 }
 
+void	generateTOTPKey(FileHandler *filehandler)
+{
+	std::string	TOTPKey;
+	try {
+		const std::string key = filehandler->getKeyFromInFile();
+		TOTPKey = CryptoHandler::generateTOTPHmacSha1(key);
+	} catch (std::exception &e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
+	std::cout << "Generated TOTP key: " << TOTPKey << std::endl;
+}
+
 int	main(int argc, char *argv[])
 {
 	FileHandler	fileHandler;
 
 	try {
-		otp_parse_argv(argc, argv, &fileHandler);
+		parseArgv(argc, argv, &fileHandler);
 	} catch (std::exception &e) {
 		std::cerr << "Invalid argument: " << e.what() << std::endl;
 		return 1;
 	}
 	if (fileHandler.getMode() == OTP_MODE_SAVE_KEY)
-		otp_save_key(&fileHandler);
-	// else otp_generate_key();
+		saveKeyToOutFile(&fileHandler);
+	else generateTOTPKey(&fileHandler);
 
 	return 0;
 }

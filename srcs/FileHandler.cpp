@@ -32,11 +32,18 @@ std::string 	FileHandler::getKeyFromInFile()
 	);
     file.close();
 
-    // Print the content
-    std::cout << "File Content: " << key << std::endl;
+	std::string	recovered;
+	if (_mode == OTP_MODE_GEN_PWD) {
+		try { recovered = CryptoHandler::decryptAES(key); }
+		catch(std::exception &e)
+		{
+			std::cerr << "Failed to decrypt key from file." << std::endl;
+			return 0;
+		}
+	} else recovered = key;
 
-	if (CryptoHandler::isValidHexStr(key))
-		return key;
+	if (CryptoHandler::isValidHexStr(recovered))
+		return recovered;
 	else throw CryptoHandler::InvalidHexException();
 }
 

@@ -41,8 +41,7 @@ std::string	CryptoHandler::encryptAES(std::string plain)
                 new StringSink(cipher)
             ) // StreamTransformationFilter
         ); // StringSource
-    }
-    catch(const Exception& e) {
+    } catch(const Exception& e) {
         std::cerr << e.what() << std::endl;
         exit(1);
     }
@@ -86,10 +85,102 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
         ); // StringSource
 
         std::cout << "recovered text: " << recovered << std::endl;
-    }
-    catch(const Exception& e)
+    } catch(const Exception& e)
     {
         std::cerr << e.what() << std::endl;
         exit(1);
     }
+	return recovered;
+}
+
+std::string	CryptoHandler::generateTOTPHmacSha1(
+	const std::string &hexKey, uint64_t timeStep)
+{
+    // Calculate the current time in seconds
+	int64_t currentTime =
+		std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()
+			.time_since_epoch()).count();
+
+	// Calculate the counter based on the time step
+	uint64_t counter = currentTime / timeStep;
+	std::cout << "counter: " << counter << std::endl;
+
+	// Convert the counter to bytes (big-endian)
+	CryptoPP::SecByteBlock counterBytes(8);
+	for (int i = 7; i >= 0; --i) {
+		counterBytes[i] = static_cast<byte>(counter & 0xFF);
+		counter >>= 8;
+	}
+
+    // Variable to store the Base32 encoded result
+    std::string base32Encoded;
+
+    // Decode hex to bytes and encode to Base32
+    CryptoPP::StringSource(hexKey, true,
+        new CryptoPP::HexDecoder(
+            new CryptoPP::Base32Encoder(
+                new CryptoPP::StringSink(base32Encoded),
+                true, false  // no padding
+            )
+        )
+    );
+    // Print the result
+    std::cout << "Base32 Encoded: " << base32Encoded << std::endl;
+
+	// Use the provided hex-encoded secret key
+	CryptoPP::SecByteBlock hmacKey;
+	CryptoPP::Base32Encoder base32Encoder(new CryptoPP::ArraySink(hmacKey, hmacKey.size()));
+	base32Encoder.Put(reinterpret_cast<const byte*>(hexKey.data()), hexKey.size());
+	base32Encoder.MessageEnd();
+
+    // // Hex decoding
+	// CryptoPP::SecByteBlock hmacKey;
+    // CryptoPP::StringSource(hexKey, true,
+    //     new CryptoPP::HexDecoder(
+    //         new CryptoPP::ArraySink(hmacKey, hmacKey.size())
+    //     )
+    // );
+
+	// /******************* FOR TESTING ***************************/
+	std::string encoded;
+	CryptoPP::Base32Encoder base32Encoder2;
+	base32Encoder2.Put(reinterpret_cast<const byte*>(hexKey.data()), hexKey.size());
+	base32Encoder2.MessageEnd();
+
+	std::cout << "Base32 secret: ";
+	word64 size = base32Encoder2.MaxRetrievable();
+	if(size)
+	{
+		encoded.resize(size);		
+		base32Encoder2.Get((byte*)&encoded[0], encoded.size());
+	}
+
+	std::cout << encoded << std::endl;
+	/******************* FOR TESTING ***************************/
+
+	// Calculate the HMAC-SHA1
+	CryptoPP::HMAC<CryptoPP::SHA1> hmac(hmacKey, hmacKey.size());
+	std::string otp(20, '\0');  // Allocate 20 characters for HMAC result
+
+	CryptoPP::StringSource(counterBytes, counterBytes.size(), true,
+		new CryptoPP::HashFilter(
+			hmac, new CryptoPP::ArraySink(reinterpret_cast<byte*>(&otp[0]), otp.size())
+		)
+	);
+
+	// Extract the lower 31 bits as an integer
+	int offset = otp[19] & 0xf;
+	int binCode = (otp[offset] & 0x7f) << 24
+		| (otp[offset + 1] & 0xff) << 16
+		| (otp[offset + 2] & 0xff) << 8
+		| (otp[offset + 3] & 0xff);
+
+	// HOTP = binCode modulo 10^6
+	binCode %= 1000000;
+
+	// Convert to string with leading zeros if necessary
+	std::ostringstream oss;
+	oss << std::setw(6) << std::setfill('0') << binCode;
+
+	return oss.str();
 }
