@@ -93,6 +93,22 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
 	return recovered;
 }
 
+std::string hexToBase32(const std::string& hexKey) {
+    std::string base32Key;
+
+    // Decode hex key
+    CryptoPP::StringSource(hexKey, true,
+        new CryptoPP::HexDecoder(
+            new CryptoPP::Base32Encoder(
+                new CryptoPP::StringSink(base32Key),
+                true // Do not insert line breaks
+            )
+        )
+    );
+
+    return base32Key;
+}
+
 std::string	CryptoHandler::generateTOTPHmacSha1(
 	const std::string &hexKey, uint64_t timeStep)
 {
@@ -112,20 +128,8 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
 		counter >>= 8;
 	}
 
-    // Variable to store the Base32 encoded result
-    std::string base32Encoded;
-
-    // Decode hex to bytes and encode to Base32
-    CryptoPP::StringSource(hexKey, true,
-        new CryptoPP::HexDecoder(
-            new CryptoPP::Base32Encoder(
-                new CryptoPP::StringSink(base32Encoded),
-                true, false  // no padding
-            )
-        )
-    );
-    // Print the result
-    std::cout << "Base32 Encoded: " << base32Encoded << std::endl;
+	std::string	base32Key = hexToBase32(hexKey);
+	std::cout << "Base32 key: " << base32Key << std::endl;
 
 	// Use the provided hex-encoded secret key
 	CryptoPP::SecByteBlock hmacKey;
@@ -141,7 +145,7 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
     //     )
     // );
 
-	// /******************* FOR TESTING ***************************/
+	/******************* FOR TESTING ***************************/
 	std::string encoded;
 	CryptoPP::Base32Encoder base32Encoder2;
 	base32Encoder2.Put(reinterpret_cast<const byte*>(hexKey.data()), hexKey.size());

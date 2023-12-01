@@ -20,7 +20,6 @@
 #include <cryptopp/sha.h>
 #include <cryptopp/filters.h>
 #include <cryptopp/base32.h>
-#include <cryptopp/base64.h>
 
 // The provided key has to have at least 64 characters
 # define OTP_MIN_KEY_STRENGTH	64

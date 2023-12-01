@@ -2,15 +2,6 @@
 
 FileHandler::FileHandler(): _fileName(), _mode() {}
 
-// void FileHandler::openFile()
-// {
-//   // Open a file for reading and writing
-// 	// Create a file stream object for both input and output
-//     _file.open(_fileName);
-//     // Check if the file is open
-//     if (!_file) throw OpenFileException();
-// }
-
 FileHandler::~FileHandler() {}
 
 void 	FileHandler::setFilename(const char *fileName) { _fileName = fileName; }
