@@ -3,7 +3,7 @@ CXX					=	c++
 CXXFLAGS			=	-std=c++11 -Wall -Wextra #-Werror
 INCS_DIR			=	incs/
 INCS				=	-I incs/
-LDFLAGS				=	-L. -lcryptopp
+LDFLAGS				=	-L./cryptopp -lcryptopp
 INCS				+=	-I incs/cryptopp
 
 #######################################
@@ -28,9 +28,16 @@ OBJS				=	$(addprefix $(OBJS_DIR), $(OBJS_FILES))
 #				R U L E S			  #
 #######################################
 
+#         C R Y P T O P P             #
+
+cryptopp:
+	git clone https://github.com/weidai11/cryptopp.git
+	make -C cryptopp/
+
+
 #		  B U I L D  R U L E S		  #
 
-all: $(NAME)
+all: cryptopp $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
