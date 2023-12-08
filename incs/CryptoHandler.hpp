@@ -21,6 +21,9 @@
 #include <cryptopp/filters.h>
 #include <cryptopp/base32.h>
 
+#include <bitset>
+#include <sstream>
+
 // The provided key has to have at least 64 characters
 # define OTP_MIN_KEY_STRENGTH	64
 // Key used for outfile (where the key is stored) encryption

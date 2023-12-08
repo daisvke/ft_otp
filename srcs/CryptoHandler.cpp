@@ -93,19 +93,18 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
 	return recovered;
 }
 
-std::string hexToBase32(const std::string& hexKey) {
+std::string hexToBase32(const std::string &hexKey) {
     std::string base32Key;
-
+std::cout << "1. KEY ORIGIN: " << hexKey << std::endl;
     // Decode hex key
     CryptoPP::StringSource(hexKey, true,
         new CryptoPP::HexDecoder(
             new CryptoPP::Base32Encoder(
                 new CryptoPP::StringSink(base32Key),
-                true // Do not insert line breaks
+                true // Capitalize
             )
         )
     );
-
     return base32Key;
 }
 
