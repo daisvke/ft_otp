@@ -34,7 +34,7 @@
 # define OTP_AES_IV_LEN			32
 // Time step used in TOTP
 # define OTP_TOTP_TIME			30
-
+using std::string;
 class	CryptoHandler
 {
 	public:
@@ -46,6 +46,9 @@ class	CryptoHandler
 		std::string	static	decryptAES(std::string &cipher);
 		std::string	static	generateTOTPHmacSha1(
 			const std::string &key, uint64_t timeStep = OTP_TOTP_TIME);
+string decodeBase32(string token);
+string generateOTPToken(string token, std::time_t t);
+
 
 	class InvalidHexException: public std::exception
 	{
