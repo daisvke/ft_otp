@@ -165,8 +165,11 @@ std::string hexToBase32(const std::string& hexKey) {
         }
         base32Key.push_back(base32Chars[index]);
     }
-    for (size_t i = base32Key.length() - 1; i > 0; --i) {
-        if (base32Key[i] == 'A') base32Key[i] = '=';
+
+    size_t  i = base32Key.length() - 1;
+    while (base32Key[i] == 'A') {
+        base32Key[i] = '=';
+        --i;
     }
 
     return base32Key;
