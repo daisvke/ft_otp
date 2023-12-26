@@ -171,7 +171,7 @@ std::string hexToBase32(const std::string& hexKey) {
         base32Key[i] = '=';
         --i;
     }
-
+    std::cout << "base32 key: " << base32Key << std::endl;
     return base32Key;
 }
 
@@ -195,38 +195,50 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
 	}
 
 	std::string	base32Key = hexToBase32(hexKey);
-	std::cout << "Base32 key: " << base32Key << std::endl;
+    byte digest[CryptoPP::SHA1::DIGESTSIZE];
+	
+    try {
+        // Convert key and data to byte arrays
+        CryptoPP::SecByteBlock dataBytes(reinterpret_cast<const byte*>(base32Key.data()), base32Key.size());
+
+        // Create an HMAC object with SHA-1
+        CryptoPP::HMAC<CryptoPP::SHA1> hmac(counterBytes, counterBytes.size());
+
+        // Compute the HMAC
+        hmac.CalculateTruncatedDigest(digest, sizeof(digest), dataBytes, dataBytes.size());
+
+        // Print the result
+        std::cout << "HMAC-SHA1: ";
+        for (size_t i = 0; i < sizeof(digest); ++i) {
+            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(digest[i]);
+        }
+        std::cout << std::endl;
+    } catch (const CryptoPP::Exception& e) {
+        std::cerr << "Crypto++ exception: " << e.what() << std::endl;
+    }
 
 	// Use the provided hex-encoded secret key
-	CryptoPP::SecByteBlock hmacKey;
-	CryptoPP::Base32Encoder base32Encoder(new CryptoPP::ArraySink(hmacKey, hmacKey.size()));
-	base32Encoder.Put(reinterpret_cast<const byte*>(hexKey.data()), hexKey.size());
-	base32Encoder.MessageEnd();
-
-    // // Hex decoding
 	// CryptoPP::SecByteBlock hmacKey;
-    // CryptoPP::StringSource(hexKey, true,
-    //     new CryptoPP::HexDecoder(
-    //         new CryptoPP::ArraySink(hmacKey, hmacKey.size())
-    //     )
-    // );
+	// CryptoPP::Base32Encoder base32Encoder(new CryptoPP::ArraySink(base32Key.data(), base32Key.size()));
+	// base32Encoder.Put(reinterpret_cast<const byte*>(base32Key.data()), base32Key.size());
+	// base32Encoder.MessageEnd();
 
 	// Calculate the HMAC-SHA1
-	CryptoPP::HMAC<CryptoPP::SHA1> hmac(hmacKey, hmacKey.size());
-	std::string otp(20, '\0');  // Allocate 20 characters for HMAC result
+	// CryptoPP::HMAC<CryptoPP::SHA1> hmac(hmacKey, hmacKey.size());
+	// std::string otp(20, '\0');  // Allocate 20 characters for HMAC result
 
-	CryptoPP::StringSource(counterBytes, counterBytes.size(), true,
-		new CryptoPP::HashFilter(
-			hmac, new CryptoPP::ArraySink(reinterpret_cast<byte*>(&otp[0]), otp.size())
-		)
-	);
+	// CryptoPP::StringSource(counterBytes, counterBytes.size(), true,
+	// 	new CryptoPP::HashFilter(
+	// 		hmac, new CryptoPP::ArraySink(reinterpret_cast<byte*>(&otp[0]), otp.size())
+	// 	)
+	// );
 
 	// Extract the lower 31 bits as an integer
-	int offset = otp[19] & 0xf;
-	int binCode = (otp[offset] & 0x7f) << 24
-		| (otp[offset + 1] & 0xff) << 16
-		| (otp[offset + 2] & 0xff) << 8
-		| (otp[offset + 3] & 0xff);
+	int offset = digest[19] & 0xf;
+	int binCode = (digest[offset] & 0x7f) << 24
+		| (digest[offset + 1] & 0xff) << 16
+		| (digest[offset + 2] & 0xff) << 8
+		| (digest[offset + 3] & 0xff);
 
 	// HOTP = binCode modulo 10^6
 	binCode %= 1000000;
