@@ -1,7 +1,7 @@
 # ft_otp
 
 ## Description
-This a program that allows you to store
+This is a program that allows you to store
 an initial password in file, and that is capable of generating a new one time password
 every time it is requested.<br />
 
