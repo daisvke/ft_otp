@@ -7,14 +7,20 @@ every time it is requested.<br />
 
 ## Commands
 ```
+// Install
 make
-./ft_otp -<option> <file name>
 
-◦ -g: The program receives as argument a hexadecimal key of at least 64 characters.
+// Generate the key
+./ft_otp -g <hex_key>
+
+The program receives as argument a hexadecimal key of at least 64 characters.
 The program stores this key safely in a file called ft_otp.key,
 which is encrypted with AES encryption using Crypto++.
 
-◦ -k: The program generates a new temporary password based on the key
+// Generate the temporary password
+./ft_otp -k ft_otp.key
+
+The program generates a new temporary password based on the encrypted key
 given as argument and prints it on the standard output.
 
 // Check what TOTP code you should get

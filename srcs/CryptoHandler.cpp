@@ -120,7 +120,7 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
             ) // StreamTransformationFilter
         ); // StringSource
 
-        std::cout << "recovered text: " << recovered << std::endl;
+        std::cout << "Recovered hex secret: " << recovered << std::endl;
     } catch(const Exception& e)
     {
         std::cerr << e.what() << std::endl;
@@ -129,6 +129,7 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
 	return recovered;
 }
 
+// Function to convert a hex string to a Base32 string
 std::string hexToBase32(const std::string& hexKey) {
     // Define the Base32 encoding table
     const char base32Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -171,7 +172,7 @@ std::string hexToBase32(const std::string& hexKey) {
         base32Key[i] = '=';
         --i;
     }
-    std::cout << "base32 key: " << base32Key << std::endl;
+    std::cout << "Base32 secret: " << base32Key << std::endl;
     return base32Key;
 }
 
@@ -185,7 +186,8 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
 
 	// Calculate the counter based on the time step
 	uint64_t counter = currentTime / timeStep;
-	std::cout << "counter: " << counter << std::endl;
+	std::cout << "Counter: 0x" << std::hex
+		<< counter << " (" << std::dec << counter << ")" << std::endl;
 
 	// Convert the counter to bytes (big-endian)
 	CryptoPP::SecByteBlock counterBytes(8);
