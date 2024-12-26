@@ -4,7 +4,6 @@ using namespace CryptoPP;
 CryptoHandler::CryptoHandler() {}
 CryptoHandler::~CryptoHandler() {}
 
-
 #include <stdio.h>
 #include <string.h>
 #include <openssl/hmac.h>
@@ -17,29 +16,6 @@ CryptoHandler::~CryptoHandler() {}
 #include <iostream>
 #include <iomanip>
 
-using std::string;
-
-string CryptoHandler::decodeBase32(string token) {
-    string secret;
-    int lookup[256];
-    const CryptoPP::byte ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    CryptoPP::Base32Decoder::InitializeDecodingLookupArray(lookup, ALPHABET, 32, true);
-
-    CryptoPP::Base32Decoder decoder;
-    CryptoPP::AlgorithmParameters params = CryptoPP::MakeParameters(CryptoPP::Name::DecodingLookupArray(),(const int *)lookup);
-    decoder.IsolatedInitialize(params);
-    decoder.Put((CryptoPP::byte*)token.data(), token.length());
-    decoder.MessageEnd();
-
-    CryptoPP::word64 size = decoder.MaxRetrievable();
-    if(size && size <= SIZE_MAX)
-    {
-        secret.resize(size);
-        decoder.Get((CryptoPP::byte*)secret.data(), secret.length());
-    }
-    return secret;
-}
-
 bool CryptoHandler::isValidHexStr(const std::string str)
 {
     return !str.empty() &&
@@ -49,7 +25,7 @@ bool CryptoHandler::isValidHexStr(const std::string str)
 		str.size() >= OTP_MIN_KEY_STRENGTH;
 }
 
-SecByteBlock	convertStringToBytes(const char *str, int size)
+static SecByteBlock	convertStringToBytes(const char *str, int size)
 {
     SecByteBlock	key(
 		reinterpret_cast<const CryptoPP::byte*>(str), size
@@ -114,11 +90,14 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
         CBC_Mode< AES >::Decryption d;
         d.SetKeyWithIV(key, key.size(), iv);
 
-        StringSource s(cipher, true, 
-            new StreamTransformationFilter(d,
+        StringSource s(
+            cipher,
+            true, 
+            new StreamTransformationFilter(
+                d,
                 new StringSink(recovered)
-            ) // StreamTransformationFilter
-        ); // StringSource
+            )
+        );
 
         std::cout << "Recovered hex secret: " << recovered << std::endl;
     } catch(const Exception& e)
@@ -129,125 +108,201 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
 	return recovered;
 }
 
-// Function to convert a hex string to a Base32 string
-std::string hexToBase32(const std::string& hexKey) {
-    // Define the Base32 encoding table
-    const char base32Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+/**
+ * @brief A function to detect and decode the key (Base32 or Hex)
+ *
+ * It will convert a human-readable string representation of data
+ * back into its raw binary form.
+ * 
+ * @param Hex or Base32 string
+ * 
+ * @return
+ *  In case the given string is not a Hex/Base32 key,
+ *  an 'invalid_argument' exception is thrown.
+ */
+SecByteBlock DecodeKey(const std::string& key) {
+    SecByteBlock    decodedKey;
+    bool            isHex = true, isBase32 = true;
 
-    // Convert hex to binary
-    std::string binaryKey;
-    for (char hexChar : hexKey) {
-        if (hexChar == '\0') {
-            // Handle null character as any other character
-            binaryKey.push_back('0');
-            binaryKey.push_back('0');
-            binaryKey.push_back('0');
-            binaryKey.push_back('0');
-        } else {
-            int hexValue;
-            std::sscanf(&hexChar, "%1X", &hexValue);  // Convert hex char to integer
-            for (int i = 3; i >= 0; --i) {
-                binaryKey.push_back(((hexValue >> i) & 1) ? '1' : '0');
-            }
-        }
+    // Check the format of the key
+    for (char c : key) {
+        // Check for valid hex characters
+        if (!std::isxdigit(c)) isHex = false;
+        // Check for valid Base32 characters
+        if (!std::isalnum(c)
+                || (std::toupper(c) > '7' && std::toupper(c) < 'A')
+            )
+            isBase32 = false;
     }
 
-    // Add padding to make the length a multiple of 40 (8 characters)
-    while (binaryKey.length() % 40 != 0) {
-        binaryKey.push_back('0');
+    // Decode the key based on its format
+    if (isHex) {
+        HexDecoder  decoder;
+        decoder.Put((byte*)key.data(), key.size());
+        decoder.MessageEnd();
+        size_t size = decoder.MaxRetrievable();
+        decodedKey.resize(size);
+        decoder.Get(decodedKey, size);
+    } else if (isBase32) {
+        Base32Decoder decoder;
+        decoder.Put((byte*)key.data(), key.size());
+        decoder.MessageEnd();
+        size_t size = decoder.MaxRetrievable();
+        decodedKey.resize(size);
+        decoder.Get(decodedKey, size);
+    } else {
+        throw std::invalid_argument("Key must be in Base32 or Hex format.");
     }
 
-    // Convert binary to Base32
-    std::string base32Key;
-    for (size_t i = 0; i < binaryKey.length(); i += 5) {
-        int index = 0;
-        for (size_t j = 0; j < 5; ++j) {
-            index = (index << 1) + (binaryKey[i + j] - '0');
-        }
-        base32Key.push_back(base32Chars[index]);
-    }
+    return decodedKey;
+}
 
-    size_t  i = base32Key.length() - 1;
-    while (base32Key[i] == 'A') {
-        base32Key[i] = '=';
-        --i;
+// Convert a 64-bit counter to big-endian format
+static void ConvertToBigEndian(uint64_t counter, uint8_t *outputBuffer) {
+    for (int i = 7; i >= 0; --i) {
+        outputBuffer[i] = counter & 0xFF;   // Extract the least significant byte
+        counter >>= 8;                      // Shift to the next byte
     }
-    std::cout << "Base32 secret: " << base32Key << std::endl;
-    return base32Key;
+}
+
+/**
+ * @brief Check if the system is little-endian
+ * 
+ * If little-endian, the least significant byte (LSB) of a
+ * multi-byte value is stored at the lowest memory address.
+ * 
+ * Memory layout:
+ * Little-endian: [01 00]  -> testBytes[0] == 0x01
+ * Big-endian:    [00 01]  -> testBytes[0] == 0x00
+ */
+static bool IsLittleEndian() {
+    uint16_t    testValue = 0x1;
+    uint8_t     *testBytes = reinterpret_cast<uint8_t*>(&testValue);
+    return testBytes[0] == 0x1; // If the least significant byte is first, it's little-endian.
+}
+
+static void ConvertToBigEndianIfNeeded(uint64_t counter, uint8_t* outputBuffer) {
+    if (IsLittleEndian()) {
+        ConvertToBigEndian(counter, outputBuffer);
+    } else {
+        std::memcpy(outputBuffer, &counter, 8); // Already big-endian, just copy
+    }
+}
+
+static CryptoPP::SecByteBlock computeCounter(uint64_t timeStep) {
+    // Calculate the current time in seconds
+	int64_t currentTime =
+		std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now()
+			    .time_since_epoch()
+            ).count();
+
+	uint64_t                counter = currentTime / timeStep;
+    CryptoPP::SecByteBlock  counterByteArray(8);
+
+    // Print the counter both in uppercase Hex and decimal formats
+	std::cout << "Counter: 0X" << std::uppercase << std::hex << counter
+        << " (" << std::dec << counter << ")" << std::endl;
+
+    // Get a raw bytes representation of the counter (convert if needed)
+    ConvertToBigEndianIfNeeded(counter, counterByteArray);
+
+    return counterByteArray;
 }
 
 std::string	CryptoHandler::generateTOTPHmacSha1(
-	const std::string &hexKey, uint64_t timeStep)
+	const std::string &hexKey, uint64_t timeStep, int digits)
 {
-    // Calculate the current time in seconds
-	int64_t currentTime =
-		std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()
-			.time_since_epoch()).count();
+    std::string otpString = ""; // The TOTP code to return
 
-	// Calculate the counter based on the time step
-	uint64_t counter = currentTime / timeStep;
-	std::cout << "Counter: 0x" << std::hex
-		<< counter << " (" << std::dec << counter << ")" << std::endl;
-
-	// Convert the counter to bytes (big-endian)
-	CryptoPP::SecByteBlock counterBytes(8);
-	for (int i = 7; i >= 0; --i) {
-		counterBytes[i] = static_cast<byte>(counter & 0xFF);
-		counter >>= 8;
-	}
-
-	std::string	base32Key = hexToBase32(hexKey);
-    byte digest[CryptoPP::SHA1::DIGESTSIZE];
-	
     try {
-        // Convert key and data to byte arrays
-        CryptoPP::SecByteBlock dataBytes(reinterpret_cast<const byte*>(base32Key.data()), base32Key.size());
+        // 'hexKey' is the shared secret between client and server;
+        // each HOTP generator has a different and unique secret.
+        CryptoPP::SecByteBlock	decodedKey = DecodeKey(hexKey);
 
-        // Create an HMAC object with SHA-1
-        CryptoPP::HMAC<CryptoPP::SHA1> hmac(counterBytes, counterBytes.size());
+        /*
+        * Generate the 'counter' needed by HMAC. 
+        *	'counter' is an 8-byte counter value, the moving factor.
+        *
+        *	This counter MUST be synchronized between the HOTP generator)
+        *	(client) and the HOTP validator (server).
+        */
 
-        // Compute the HMAC
-        hmac.CalculateTruncatedDigest(digest, sizeof(digest), dataBytes, dataBytes.size());
+        CryptoPP::SecByteBlock  counterByteArray(8);
+        const size_t            counterByteArraySize = 8;
+        byte                    hmacDigest[CryptoPP::HMAC<CryptoPP::SHA1>::DIGESTSIZE];
 
-        // Print the result
+        counterByteArray = computeCounter(timeStep);
+
+
+        // Create an HMAC (Hash-based Message Authentication Code) object with SHA-1,
+        // as defined in RFC 2104 [BCK2].
+        CryptoPP::HMAC<CryptoPP::SHA1> hmac(
+			decodedKey, decodedKey.size()
+			);
+
+        /*
+         * We compute the HMAC digest:
+         *
+         * An HMAC digest refers to the output generated by the HMAC process.
+         * It is a byte array like here, or a fixed-size string, that serves as a
+         * unique representation of the input data (message) combined with a secret key. 
+         *
+         * 'CalculateDigest' can be replaced by these two methods below used together:
+         *  hmac.Update(counterByteArray, counterByteArraySize);
+	     *  hmac.Final(hmacDigest);
+         */
+        hmac.CalculateDigest(hmacDigest, counterByteArray, counterByteArraySize);
+
+        // Print the resulted HMAC digest
         std::cout << "HMAC-SHA1: ";
-        for (size_t i = 0; i < sizeof(digest); ++i) {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(digest[i]);
+        for (size_t i = 0; i < sizeof(hmacDigest); ++i)
+        {
+            std::cout << std::hex << std::setw(2) << std::setfill('0')
+                << static_cast<int>(hmacDigest[i]);
         }
         std::cout << std::endl;
+
+        /*
+            Compute the HMAC:
+                
+            As the output of the HMAC-SHA-1 calculation is 160 bits,
+            we must truncate this value to something that can be easily
+            entered by a user.
+        */
+        // Extract the lower 31 bits as an integer
+        int offset = hmacDigest[SHA1::DIGESTSIZE - 1] & 0x0F;
+        uint32_t binaryCode = (hmacDigest[offset] & 0x7F) << 24 |
+                            (hmacDigest[offset + 1] & 0xFF) << 16 |
+                            (hmacDigest[offset + 2] & 0xFF) << 8 |
+                            (hmacDigest[offset + 3] & 0xFF);
+
+        std::cout << "bincode: " << binaryCode << std::endl;
+
+        /*
+         * Compute TOTP code:
+         *
+         * If digit = 10⁶, this line below equals to:
+         *  binaryCode %= 1000000;
+         * 
+         * This is to ensure that the resulting code is a fixed length,
+         * specifically a 6-digit number.
+         * 
+         * The modulo operation also adds a layer of obfuscation.
+         * An attacker who only sees the TOTP code (the 6-digit output) does not have
+         * direct access to the original HMAC value.
+         */
+        uint32_t otp = binaryCode % static_cast<uint32_t>(std::pow(10, digits));
+        
+        // Format OTP as zero-padded string
+        otpString = std::to_string(otp);
+        while (otpString.size() < static_cast<size_t>(digits)) {
+            otpString = "0" + otpString;
+        }
+
     } catch (const CryptoPP::Exception& e) {
         std::cerr << "Crypto++ exception: " << e.what() << std::endl;
     }
 
-	// Use the provided hex-encoded secret key
-	// CryptoPP::SecByteBlock hmacKey;
-	// CryptoPP::Base32Encoder base32Encoder(new CryptoPP::ArraySink(base32Key.data(), base32Key.size()));
-	// base32Encoder.Put(reinterpret_cast<const byte*>(base32Key.data()), base32Key.size());
-	// base32Encoder.MessageEnd();
-
-	// Calculate the HMAC-SHA1
-	// CryptoPP::HMAC<CryptoPP::SHA1> hmac(hmacKey, hmacKey.size());
-	// std::string otp(20, '\0');  // Allocate 20 characters for HMAC result
-
-	// CryptoPP::StringSource(counterBytes, counterBytes.size(), true,
-	// 	new CryptoPP::HashFilter(
-	// 		hmac, new CryptoPP::ArraySink(reinterpret_cast<byte*>(&otp[0]), otp.size())
-	// 	)
-	// );
-
-	// Extract the lower 31 bits as an integer
-	int offset = digest[19] & 0xf;
-	int binCode = (digest[offset] & 0x7f) << 24
-		| (digest[offset + 1] & 0xff) << 16
-		| (digest[offset + 2] & 0xff) << 8
-		| (digest[offset + 3] & 0xff);
-
-	// HOTP = binCode modulo 10^6
-	binCode %= 1000000;
-
-	// Convert to string with leading zeros if necessary
-	std::ostringstream oss;
-	oss << std::setw(6) << std::setfill('0') << binCode;
-
-	return oss.str();
+    return otpString;
 }

@@ -1240,7 +1240,7 @@ public:
 	/// \details CalculateTruncatedDigest() restarts the hash for the next message.
 	/// \pre <tt>digestSize <= DigestSize()</tt> or <tt>digestSize <= HASH::DIGESTSIZE</tt> ensures
 	///  the output byte buffer is a valid size.
-	virtual void CalculateTruncatedDigest(byte *digest, size_t digestSize, const byte *input, size_t length)
+	virtual void invalid_argumentCalculateTruncatedDigest(byte *digest, size_t digestSize, const byte *input, size_t length)
 		{Update(input, length); TruncatedFinal(digest, digestSize);}
 
 	/// \brief Verifies the hash of the current message
