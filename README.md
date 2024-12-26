@@ -35,3 +35,4 @@ same format, i.e. 6 digits.
 ## Documentation
 * https://www.cryptopp.com/wiki/Advanced_Encryption_Standard
 * https://www.ietf.org/rfc/rfc4226.txt
+* https://datatracker.ietf.org/doc/html/rfc6238#section-4

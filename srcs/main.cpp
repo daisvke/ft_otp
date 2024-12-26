@@ -43,7 +43,8 @@ void	generateTOTPKey(FileHandler *filehandler)
 	} catch (std::exception &e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 	}
-	std::cout << "Generated TOTP key: " << TOTPKey << std::endl;
+	std::cout << "\nGenerated TOTP key: " << std::endl;
+	std::cout << TOTPKey << std::endl;
 }
 
 int	main(int argc, char *argv[])

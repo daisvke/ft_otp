@@ -25,6 +25,23 @@ bool CryptoHandler::isValidHexStr(const std::string str)
 		str.size() >= OTP_MIN_KEY_STRENGTH;
 }
 
+// bool isValidHexBase32(const std::string &str) {
+//     bool            isHex = true, isBase32 = true;
+
+//     // Check the format of the key
+//     for (char c : str) {
+//         // Check for valid hex characters
+//         if (!std::isxdigit(c)) isHex = false;
+//         // Check for valid Base32 characters
+//         if (!std::isalnum(c)
+//                 || (std::toupper(c) > '7' && std::toupper(c) < 'A')
+//             )
+//             isBase32 = false;
+//     }
+
+    
+// }
+
 static SecByteBlock	convertStringToBytes(const char *str, int size)
 {
     SecByteBlock	key(
@@ -99,7 +116,7 @@ std::string CryptoHandler::decryptAES(std::string &cipher)
             )
         );
 
-        std::cout << "Recovered hex secret: " << recovered << std::endl;
+        std::cout << "Hex secret: " << recovered << std::endl;
     } catch(const Exception& e)
     {
         std::cerr << e.what() << std::endl;
@@ -190,12 +207,16 @@ static void ConvertToBigEndianIfNeeded(uint64_t counter, uint8_t* outputBuffer) 
 }
 
 static CryptoPP::SecByteBlock computeCounter(uint64_t timeStep) {
+    std::cout << "Step size (seconds): " << timeStep << std::endl;
+
     // Calculate the current time in seconds
 	int64_t currentTime =
 		std::chrono::duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now()
 			    .time_since_epoch()
             ).count();
+
+    std::cout << "Current time: " << currentTime << std::endl;
 
 	uint64_t                counter = currentTime / timeStep;
     CryptoPP::SecByteBlock  counterByteArray(8);
@@ -237,6 +258,7 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
 
         // Create an HMAC (Hash-based Message Authentication Code) object with SHA-1,
         // as defined in RFC 2104 [BCK2].
+        std::cout << "TOTP mode: HMAC-SHA1" << std::endl;
         CryptoPP::HMAC<CryptoPP::SHA1> hmac(
 			decodedKey, decodedKey.size()
 			);
@@ -264,8 +286,6 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
         std::cout << std::endl;
 
         /*
-            Compute the HMAC:
-                
             As the output of the HMAC-SHA-1 calculation is 160 bits,
             we must truncate this value to something that can be easily
             entered by a user.
@@ -276,8 +296,6 @@ std::string	CryptoHandler::generateTOTPHmacSha1(
                             (hmacDigest[offset + 1] & 0xFF) << 16 |
                             (hmacDigest[offset + 2] & 0xFF) << 8 |
                             (hmacDigest[offset + 3] & 0xFF);
-
-        std::cout << "bincode: " << binaryCode << std::endl;
 
         /*
          * Compute TOTP code:

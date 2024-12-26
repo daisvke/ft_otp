@@ -13,16 +13,16 @@
 # include <cryptopp/hex.h>
 # include <cryptopp/files.h>
 // For TOTP HMAC-SHA1 hash
-#include <iomanip>
-#include <chrono>
-#include <sstream>
-#include <cryptopp/hmac.h>
-#include <cryptopp/sha.h>
-#include <cryptopp/filters.h>
-#include <cryptopp/base32.h>
+# include <iomanip>
+# include <chrono>
+# include <sstream>
+# include <cryptopp/hmac.h>
+# include <cryptopp/sha.h>
+# include <cryptopp/filters.h>
+# include <cryptopp/base32.h>
 
-#include <bitset>
-#include <sstream>
+# include <bitset>
+# include <sstream>
 
 // The provided key has to have at least 64 characters
 # define OTP_MIN_KEY_STRENGTH	64
@@ -52,7 +52,6 @@ class	CryptoHandler
 			const std::string &key, uint64_t timeStep = OTP_TOTP_TIME, int digits = OTP_TOTP_CODE_DIGIT
 			);
 		string decodeBase32(string token);
-		string generateOTPToken(string token, std::time_t t);
 
 	class InvalidHexException: public std::exception
 	{
