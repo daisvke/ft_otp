@@ -5,6 +5,7 @@ INCS_DIR			=	incs/
 INCS				=	-I incs/
 LDFLAGS				=	-L./cryptopp -lcryptopp
 INCS				+=	-I cryptopp/
+CRYPTOPP_LIB		=	cryptopp/libcryptopp.a
 
 #######################################
 #				F I L E S			  #
@@ -32,7 +33,7 @@ OBJS				=	$(addprefix $(OBJS_DIR), $(OBJS_FILES))
 
 all: $(NAME)
 
-$(NAME): cryptopp $(OBJS)
+$(NAME): $(CRYPTOPP_LIB) $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
@@ -42,8 +43,12 @@ $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 
 #         C R Y P T O P P             #
 
-cryptopp:
-	git clone https://github.com/weidai11/cryptopp.git
+# If cryptopp folder is missing, download it, then compile.
+# If only the library is missing, compile it.
+$(CRYPTOPP_LIB):
+	@if [ ! -d "cryptopp" ]; then \
+		git clone https://github.com/weidai11/cryptopp.git; \
+	fi
 	make -C cryptopp/
 
 
