@@ -3,10 +3,8 @@ CXX					=	c++
 CXXFLAGS			=	-std=c++11 -Wall -Wextra -Werror
 INCS_DIR			=	incs/
 INCS				=	-I incs/
-LDFLAGS				=	-L./cryptopp -lcryptopp
-INCS				+=	-I cryptopp/
+LDFLAGS				=	-lcryptopp
 INCS_FILES			=	$(wildcard $(INCS_DIR)*.hpp)
-CRYPTOPP_LIB		=	cryptopp/libcryptopp.a
 
 # Secret key files
 HEX_KEY_FILE		=	keys/key.hex
@@ -88,26 +86,12 @@ process_test_key = \
 all: $(NAME)
 
 # Main target
-$(NAME): $(CRYPTOPP_LIB) $(OBJS) $(INCS_FILES)
+$(NAME): $(OBJS) $(INCS_FILES)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 	mkdir -p $(OBJS_DIR)
 	$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $<
-
-
-#            C R Y P T O P P          #
-
-# If cryptopp folder is missing, download it, then compile.
-# If the folder exists, the binary doesn't and the gzip compressed binary
-# exists, then uncompress it.
-$(CRYPTOPP_LIB):
-	@if [ ! -d "cryptopp" ]; then \
-		git clone https://github.com/weidai11/cryptopp.git; \
-		make -C cryptopp/; \
-	elif [ ! -f cryptopp/libcryptopp.a ] && [ -f cryptopp/libcryptopp.a.gz ]; then \
-		gunzip -k cryptopp/libcryptopp.a.gz; \
-	fi
 
 
 #              T E S T I N G          #
