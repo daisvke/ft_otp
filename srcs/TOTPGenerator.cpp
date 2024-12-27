@@ -28,7 +28,7 @@ uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
 static SecByteBlock convertStringToBytes(const char *str, int size)
 {
     SecByteBlock key(
-        reinterpret_cast<const CryptoPP::byte *>(str), size);
+        reinterpret_cast<const byte *>(str), size);
     return key;
 }
 

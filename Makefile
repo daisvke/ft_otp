@@ -1,5 +1,5 @@
 NAME				=	ft_otp
-CXX					=	c++
+CXX					=	clang++
 CXXFLAGS			=	-std=c++11 -Wall -Wextra -Werror
 INCS_DIR			=	incs/
 INCS				=	-I incs/
@@ -90,9 +90,9 @@ $(NAME): $(OBJS) $(INCS_FILES)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
-	mkdir -p $(OBJS_DIR)
+	@mkdir -p $(OBJS_DIR)
 	@$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $< || \
-		{	echo "$(ERROR) Compilation failed for $<."; \
+		{	echo "\n$(ERROR) Compilation failed for $<."; \
 			echo "$(INFO) Possible reason: Crypto++ library is not installed or correctly linked."; \
 			echo "$(INFO)"; \
 			echo "$(INFO) To install the library on Ubuntu/Debian-based systems:"; \
@@ -105,28 +105,28 @@ $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 			echo "$(INFO) Replace 'X' by the version you've found during the previous step:"; \
 			echo "$(INFO) \t\tsudo apt install libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc"; \
 			echo "$(INFO) Or, on Termux:"; \
-			echo "$(INFO) \t\tpkg install cryptopp"; \
+			echo "$(INFO) \t\tpkg install cryptopp\n"; \
 			exit 1; }
 
 
-#              T E S T I N G          #
+#			  T E S T I N G		  #
 
 # Test all keys
 tests:
 	@echo "$(INFO) Starting tests..."
 	@echo "\n"
 	@echo "$(INFO) ##################################################"
-	@echo "$(INFO) #                 H     E    X                   #"
+	@echo "$(INFO) #				 H	 E	X				   #"
 	@echo "$(INFO) ##################################################"
 	@$(MAKE) hex
 	@echo "\n\n"
 	@echo "$(INFO) ##################################################"
-	@echo "$(INFO) #                 B A S E  3 2                   #"
+	@echo "$(INFO) #				 B A S E  3 2				   #"
 	@echo "$(INFO) ##################################################"
 	@$(MAKE) b32
 	@echo "\n\n"
 	@echo "$(INFO) ##################################################"
-	@echo "$(INFO) #                B A D   K E Y                   #"
+	@echo "$(INFO) #				B A D   K E Y				   #"
 	@echo "$(INFO) ##################################################"
 	@$(MAKE) err
 	@echo "$(INFO) Tests completed."
