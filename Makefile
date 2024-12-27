@@ -91,7 +91,22 @@ $(NAME): $(OBJS) $(INCS_FILES)
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 	mkdir -p $(OBJS_DIR)
-	$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $<
+	@$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $< || \
+		{	echo "$(ERROR) Compilation failed for $<."; \
+			echo "$(INFO) Possible reason: Crypto++ library is not installed or correctly linked."; \
+			echo "$(INFO)"; \
+			echo "$(INFO) To install the library on Ubuntu/Debian-based systems:"; \
+			echo "$(INFO)"; \
+			echo "$(INFO) First, check the available packages for your system:"; \
+			echo "$(INFO) \t\tapt search libcrypto++"; \
+			echo "$(INFO) Or, on Termux:"; \
+			echo "$(INFO) \t\tpkg search cryptopp"; \
+			echo "$(INFO)"; \
+			echo "$(INFO) Replace 'X' by the version you've found during the previous step:"; \
+			echo "$(INFO) \t\tsudo apt install libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc"; \
+			echo "$(INFO) Or, on Termux:"; \
+			echo "$(INFO) \t\tpkg install cryptopp"; \
+			exit 1; }
 
 
 #              T E S T I N G          #
