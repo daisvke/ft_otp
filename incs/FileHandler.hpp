@@ -33,7 +33,6 @@ public:
 private:
 	const char *_fileName;
 	otp_e_modes _mode;
-	char *_key;
 
 	class OpenFileException : public std::exception
 	{
