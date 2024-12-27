@@ -106,8 +106,7 @@ $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 			echo "$(INFO) \t\tsudo apt install libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc"; \
 			echo "$(INFO) Or, on Termux:"; \
 			echo "$(INFO) \t\tpkg install cryptopp\n"; \
-			exit 1; 
-		}
+			exit 1;}
 
 
 #			  T E S T I N G		  #
