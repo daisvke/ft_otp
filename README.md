@@ -73,9 +73,6 @@ make tests	// Run all tests
 
 ## Notes
 
-### Compatibility
-* We added `cpu-features.h` for some systems as Termux on Android.
-
 ### Library
 * As we sort of struggled trying to install and use the Crypto++ binary on some of our systems, we decided to install it from the source and include it on this repository as we found it to be much simpler to use.
 * We've cloned the repo from Github and compiled it and tried to only keep the files that we were using by running:<br />
@@ -107,4 +104,4 @@ So, the key difference between our implementation and the behavior of oathtool i
 * https://www.cryptopp.com/wiki/Advanced_Encryption_Standard (AES)
 * https://www.ietf.org/rfc/rfc4226.txt (HOTP)
 * https://datatracker.ietf.org/doc/html/rfc6238#section-4 (TOTP)
-* https://datatracker.ietf.org/doc/html/rfc4648#section-6 (Base 32 encoding)
+* https://datatracker.ietf.org/doc/html/rfc4648#section-6 (Base32 encoding)

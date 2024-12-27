@@ -99,12 +99,15 @@ $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 #            C R Y P T O P P          #
 
 # If cryptopp folder is missing, download it, then compile.
-# If only the library is missing, compile it.
+# If the folder exists, the binary doesn't and the gzip compressed binary
+# exists, then uncompress it.
 $(CRYPTOPP_LIB):
 	@if [ ! -d "cryptopp" ]; then \
 		git clone https://github.com/weidai11/cryptopp.git; \
+		make -C cryptopp/; \
+	elif [ ! -f cryptopp/libcryptopp.a ] && [ -f cryptopp/libcryptopp.a.gz ]; then \
+		gunzip -k cryptopp/libcryptopp.a.gz; \
 	fi
-	make -C cryptopp/
 
 
 #              T E S T I N G          #

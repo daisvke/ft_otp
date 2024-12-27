@@ -3,11 +3,6 @@
 # Temp files
 .*.sw?
 
-# Test files
-ft_otp
-ft_otp.key
-/t*
-
 # Prerequisites
 *.d
 
@@ -32,8 +27,8 @@ ft_otp.key
 
 # Compiled Static libraries
 *.lai
-*.la
 *.a
+*.la
 *.lib
 
 # Executables
