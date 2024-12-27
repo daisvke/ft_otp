@@ -73,8 +73,8 @@ public:
 		InvalidKeyFormatException() throw() {}
 		const char *what() const throw()
 		{
-			return "\033[31mString is not a hexadecimal key "
-				   "or a Base32 key of at least 64 characters!";
+			return "\033[31mThe given string is not a hexadecimal key "
+				   "or a Base32 key of at least 64 characters.";
 		}
 		~InvalidKeyFormatException() throw() {}
 	};

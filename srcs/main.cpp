@@ -33,6 +33,7 @@ void saveKeyToOutFile(FileHandler *filehandler)
 	catch (std::exception &e)
 	{
 		std::cerr << "Error: " << e.what() << std::endl;
+		exit(1);
 	}
 }
 
@@ -47,6 +48,7 @@ void generateTOTPKey(FileHandler *filehandler)
 	catch (std::exception &e)
 	{
 		std::cerr << "Error: " << e.what() << std::endl;
+		exit(1);
 	}
 	std::cout << "\nGenerated TOTP key: " << std::endl;
 	std::cout << TOTPKey << std::endl;

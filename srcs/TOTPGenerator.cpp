@@ -21,7 +21,6 @@ uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
             c != '=' && (!std::isalnum(c) || (std::toupper(c) > '7' && std::toupper(c) < 'A')))
             keyFormat ^= OTP_KEYFORMAT_BASE32;
     }
-    if ((keyFormat & OTP_KEYFORMAT_HEX) || (keyFormat & OTP_KEYFORMAT_BASE32))
 
     return keyFormat;
 }
