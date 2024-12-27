@@ -39,12 +39,16 @@ oathtool --totp -b $(cat keys/key.base32) -v
 // Examples of usage
 
 // With a Hex key
-// 1. Generate and save the encrypted key to the external file `
+
+// 1. Generate and save the encrypted key to the external file `ft_otp.key`.
 make && ./ft_otp -g keys/key.hex
 
+// 2. Decode the encrypted key and generate a TOTP code from it.
+// Compare our TOTP code to the one delivered by `oathtool`.
 ./ft_otp ft_otp.key -k && echo "" && oathtool --totp $(cat keys/key.hex) -v
 
 // With a Base32 key
+
 make && ./ft_otp ft_otp.key -k && echo "" && athtool --totp -b $(cat keys/key.base32) -v
 ```
 

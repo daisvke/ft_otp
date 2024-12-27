@@ -22,9 +22,6 @@ uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
             keyFormat ^= OTP_KEYFORMAT_BASE32;
     }
     if ((keyFormat & OTP_KEYFORMAT_HEX) || (keyFormat & OTP_KEYFORMAT_BASE32))
-        std::cout << "YES 2: " << int(keyFormat) << std::endl;
-    else
-        std::cout << "NO: " << int(keyFormat) << std::endl;
 
     return keyFormat;
 }
