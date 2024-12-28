@@ -67,7 +67,8 @@ $(NAME): $(OBJS) $(INCS_FILES)
 # Object files
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
 	@mkdir -p $(OBJS_DIR)
-	@$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $< || \
+	@echo "$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $<"; \
+		$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $< || \
 		{	echo "\n$(ERROR) Compilation failed for $<."; \
 			echo "$(INFO) Possible reason: Crypto++ library is not installed or correctly linked."; \
 			echo "$(INFO)"; \
