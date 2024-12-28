@@ -73,7 +73,7 @@ void FileHandler::saveKeyToOutFile(std::string key)
 	{
 		std::cerr << "Error: while encrypting: " << e.what() << std::endl;
 	}
-	std::cout << " \nKEY encrypted: " << cipher << std::endl;
+	std::cout << " \nKEY encrypted." << std::endl;
 	// Write the encrypted data in the file
 	file << cipher;
 	file.close();

@@ -8,9 +8,11 @@ every time it is requested.<br />
 ### Secret key
 * The `keys` folder contains a set of valid and invalid keys (for testing purpose). The valid keys are: `key.hex`, `key.base32`.
 * The file containing the secret key shouldn't end with a newline character.
-do `echo -n <key_string> > <key_file>` to put into a file a string that doesn't end with a newline. 
-* The key has to be either in Hex or Base32 formats.
-* The key has to have at least 64 characters.
+do:<br />
+`echo -n <key_string> > <key_file>`<br />
+to put into a file a string that doesn't end with a newline. 
+* The key should be either in Hex or Base32 formats.
+* The key should have at least 64 characters.
 
 
 ## Requirement
@@ -103,7 +105,7 @@ At first, we were trying to decode Base32 keys with `Base32Decoder`:
 	decodedKey.resize(size);
 	decoder.Get(decodedKey, size);
 ```
-However, the decoded string that it returned didn't match the one returned by `oathtool --totp -b $(cat key.base32) -v`.<br />
+However, the decoded string it returned didn't match the one returned by `oathtool --totp -b $(cat key.base32) -v`.<br />
 
 We thought that the padding character `=` was handled differently, so we tried our code and oathtool both with and without the padding character at the end of the key string.<br />
 However it did not change anything either with our code or with oathtool.<br />

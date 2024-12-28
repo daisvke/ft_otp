@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+
+#include "ascii_format.hpp"
 #include "TOTPGenerator.hpp"
 
 #define OTP_OUTFILENAME "ft_otp.key"

@@ -35,12 +35,12 @@ static SecByteBlock convertStringToBytes(const char *str, int size)
 std::string TOTPGenerator::encryptAES(std::string plain)
 {
     // Convert macro key and initialization vector to the approriate data type
-    SecByteBlock key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
-    SecByteBlock iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
-    HexEncoder encoder(new FileSink(std::cout));
-    std::string cipher;
+    SecByteBlock    key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
+    SecByteBlock    iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
+    HexEncoder      encoder(new FileSink(std::cout));
+    std::string     cipher;
 
-    std::cout << "plain text: " << plain << std::endl;
+    std::cout << "Plain text: " << plain << std::endl;
 
     try
     {
@@ -48,28 +48,29 @@ std::string TOTPGenerator::encryptAES(std::string plain)
         e.SetKeyWithIV(key, key.size(), iv);
 
         StringSource s(plain, true,
-                       new StreamTransformationFilter(e,
-                                                      new StringSink(cipher)) // StreamTransformationFilter
-        );                                                                    // StringSource
+                       new StreamTransformationFilter(
+                            e,
+                            new StringSink(cipher)
+                        ) // StreamTransformationFilter
+        ); // StringSource
     }
     catch (const Exception &e)
     {
         std::cerr << e.what() << std::endl;
         exit(1);
     }
-    std::cout << "CIPHER: " << std::hex << cipher << std::endl;
 
-    std::cout << "key: ";
+    std::cout << "Key: ";
     encoder.Put(key, key.size());
     encoder.MessageEnd();
     std::cout << std::endl;
 
-    std::cout << "iv: ";
+    std::cout << "IV: ";
     encoder.Put(iv, iv.size());
     encoder.MessageEnd();
     std::cout << std::endl;
 
-    std::cout << "cipher text: ";
+    std::cout << "Cipher text: ";
     encoder.Put((const byte *)&cipher[0], cipher.size());
     encoder.MessageEnd();
     std::cout << std::endl;
@@ -81,9 +82,9 @@ std::string TOTPGenerator::encryptAES(std::string plain)
 std::string TOTPGenerator::decryptAES(std::string &cipher)
 {
     // Convert macro key and initialization vector to the approriate data type
-    SecByteBlock key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
-    SecByteBlock iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
-    std::string recovered;
+    SecByteBlock    key = convertStringToBytes(OTP_AES_KEY, OTP_AES_KEY_LEN);
+    SecByteBlock    iv = convertStringToBytes(OTP_AES_IV, OTP_AES_IV_LEN);
+    std::string     recovered;
 
     try
     {
@@ -96,8 +97,6 @@ std::string TOTPGenerator::decryptAES(std::string &cipher)
             new StreamTransformationFilter(
                 d,
                 new StringSink(recovered)));
-
-        std::cout << "Hex secret: " << recovered << std::endl;
     }
     catch (const Exception &e)
     {
@@ -107,23 +106,21 @@ std::string TOTPGenerator::decryptAES(std::string &cipher)
     return recovered;
 }
 
-std::vector<uint8_t> decodeBase32RFC4648(const std::string &base32)
+std::vector<uint8_t> decodeBase32RFC4648(const std::string &base32String)
 {
-    static const std::string base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    std::vector<uint8_t> decoded;
-    uint32_t buffer = 0;
-    int bitsLeft = 0;
+    static const std::string    base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    std::vector<uint8_t>        decoded;
+    uint32_t                    buffer = 0;
+    int                         bitsLeft = 0;
 
-    for (char c : base32)
+    for (char c : base32String)
     {
-        if (c == '=')
-            break; // Padding character
+        if (c == '=')   // Padding character
+            break;      // Padding character means we have reached the end of the key 
 
         size_t index = base32Alphabet.find(std::toupper(c));
         if (index == std::string::npos)
-        {
             throw std::invalid_argument("Invalid Base32 character");
-        }
 
         buffer = (buffer << 5) | index;
         bitsLeft += 5;
@@ -134,7 +131,6 @@ std::vector<uint8_t> decodeBase32RFC4648(const std::string &base32)
             bitsLeft -= 8;
         }
     }
-
     return decoded;
 }
 
@@ -159,18 +155,18 @@ SecByteBlock DecodeKey(const std::string &key)
     // Decode the key based on its format
     if (keyFormat & OTP_KEYFORMAT_HEX)
     {
-        HexDecoder decoder;
+        HexDecoder  decoder;
         decoder.Put((byte *)key.data(), key.size());
         decoder.MessageEnd();
-        size_t size = decoder.MaxRetrievable();
+        size_t  size = decoder.MaxRetrievable();
         decodedKey.resize(size);
         decoder.Get(decodedKey, size);
-        std::cout << "Decoded Base32 Key: ";
+        std::cout << "Hex Key: ";
         for (size_t i = 0; i < decodedKey.size(); ++i)
         {
             std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(decodedKey[i]);
         }
-        std::cout << std::endl;
+        std::cout << std::dec << std::endl;
 
         return decodedKey;
     }
@@ -183,15 +179,13 @@ SecByteBlock DecodeKey(const std::string &key)
         std::cout << "Decoded Base32 Key: ";
         for (size_t i = 0; i < decodedKey.size(); ++i)
         {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(decodedKey[i]);
+            std::cout << std::hex << std::setw(2) << std::setfill('0')
+                << static_cast<int>(decodedKey[i]) << std::dec;
         }
         std::cout << std::endl;
         return decodedKey;
     }
-    else
-    {
-        throw std::invalid_argument("Key must be in Base32 or Hex format.");
-    }
+    else throw std::invalid_argument("Key must be in Base32 or Hex format.");
 }
 
 // Convert a 64-bit counter to big-endian format
@@ -251,7 +245,7 @@ static CryptoPP::SecByteBlock computeCounter(uint64_t timeStep)
 
     // Print the counter both in uppercase Hex and decimal formats
     std::cout << "Counter: 0X" << std::uppercase << std::hex << counter
-              << " (" << std::dec << counter << ")" << std::endl;
+              << std::dec << " (" << counter << ")" << std::endl;
 
     // Get a raw bytes representation of the counter (convert if needed)
     ConvertToBigEndianIfNeeded(counter, counterByteArray);
@@ -310,7 +304,7 @@ std::string TOTPGenerator::generateTOTPHmacSha1(
             std::cout << std::hex << std::setw(2) << std::setfill('0')
                       << static_cast<int>(hmacDigest[i]);
         }
-        std::cout << std::endl;
+        std::cout << std::dec << std::endl;
 
         /*
             As the output of the HMAC-SHA-1 calculation is 160 bits,
