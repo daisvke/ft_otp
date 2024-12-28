@@ -110,6 +110,27 @@ However it did not change anything either with our code or with oathtool.<br />
 
 So, the key difference between our implementation and the behavior of oathtool is likely rooted in how the Base32 decoding process is handled, particularly with respect to strict adherence to RFC 4648.m
 
+
+## Trouble shooting
+
+### Known compilation errors
+#### Missing Standard C++ Library development files
+* The error
+```
+In file included from srcs/FileHandler.cpp:1:
+incs/FileHandler.hpp:4:10: fatal error: 'iostream' file not found
+#include <iostream>
+         ^~~~~~~~~~
+1 error generated.
+```
+
+* The solution<br />
+Install the necessary development packages to provide standard headers and libraries:
+```
+sudo apt install build-essential clang libc++-14-dev libc++-dev libc++1-14 libc++abi-14-dev libc++abi-dev libc++abi1-14 libstdc++-12-dev libunwind-14 libunwind-14-dev
+```
+
+
 ## Documentation
 * https://www.cryptopp.com/wiki/Advanced_Encryption_Standard (AES)
 * https://www.ietf.org/rfc/rfc4226.txt (HOTP)
