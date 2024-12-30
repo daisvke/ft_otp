@@ -59,28 +59,20 @@ using std::string;
 
 class TOTPGenerator
 {
+private:
+	bool	_verbose;
+
 public:
-	TOTPGenerator();
+	TOTPGenerator(bool verbose);
 	~TOTPGenerator();
 
-	uint8_t static isValidHexOrBase32(const std::string &str);
-	std::string static encryptAES(std::string plain);
-	std::string static decryptAES(std::string &cipher);
-	// SecByteBlock static	DecodeKey(const std::string& key);
-	std::string static generateTOTPHmacSha1(
+	uint8_t						isValidHexOrBase32(const std::string &str);
+	std::string 				encryptAES(std::string plain);
+	std::string					decryptAES(std::string &cipher);
+	std::string					generateTOTPHmacSha1(
 		const std::string &key, uint64_t timeStep = OTP_TOTP_TIME, int digits = OTP_TOTP_CODE_DIGIT);
-
-	class InvalidKeyFormatException : public std::exception
-	{
-	public:
-		InvalidKeyFormatException() throw() {}
-		const char *what() const throw()
-		{
-			return "\033[31mThe given string is not a hexadecimal key "
-				   "or a Base32 key of at least 64 characters.";
-		}
-		~InvalidKeyFormatException() throw() {}
-	};
+	CryptoPP::SecByteBlock		DecodeKey(const std::string &key);
+	CryptoPP::SecByteBlock		computeCounter(uint64_t timeStep);
 };
 
 #endif

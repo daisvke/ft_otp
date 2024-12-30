@@ -1,11 +1,12 @@
 #include "FileHandler.hpp"
 
-FileHandler::FileHandler() : _fileName(), _mode() {}
+FileHandler::FileHandler() : _fileName(), _mode(), _verbose() {}
 
 FileHandler::~FileHandler() {}
 
 void FileHandler::setFilename(const char *fileName) { _fileName = fileName; }
 void FileHandler::setMode(otp_e_modes mode) { _mode = mode; }
+void FileHandler::setVerbose(bool verbose) { _verbose = verbose; }
 
 otp_e_modes FileHandler::getMode(void) const { return _mode; }
 
@@ -26,7 +27,9 @@ std::string FileHandler::getKeyFromInFile()
 {
 	// Create a file stream object for reading from the file
 	std::ifstream file(_fileName);
-	std::cout << "Opening secret key file '"<< _fileName << "'..." << std::endl;
+	if (_verbose)
+		std::cout	<< FMT_INFO " Opening secret key file '"
+					<< _fileName << "'..." << std::endl;
 	;
 	// Check if the file is open
 	if (!file)
@@ -37,22 +40,23 @@ std::string FileHandler::getKeyFromInFile()
 		std::istreambuf_iterator<char>());
 	file.close();
 
-	std::string recovered;
+	std::string		recovered;
+	TOTPGenerator	TOTPGenerator(_verbose);
 	if (_mode == OTP_MODE_GEN_PWD)
 	{
 		try {
-			recovered = TOTPGenerator::decryptAES(key);
+			recovered = TOTPGenerator.decryptAES(key);
 		} catch (std::exception &e) {
-			std::cerr << "Failed to decrypt key from file." << std::endl;
-			return 0;
+			std::cerr << FMT_ERROR "Failed to decrypt key from file." << std::endl;
+			return nullptr;
 		}
 	}
 	else recovered = key;
 
-	if (TOTPGenerator::isValidHexOrBase32(recovered))
+	if (TOTPGenerator.isValidHexOrBase32(recovered))
 		return recovered;
 	else
-		throw TOTPGenerator::InvalidKeyFormatException();
+		throw InvalidKeyFormatException();
 }
 
 void FileHandler::saveKeyToOutFile(std::string key)
@@ -66,14 +70,16 @@ void FileHandler::saveKeyToOutFile(std::string key)
 	std::string cipher;
 	try
 	{
-		cipher = TOTPGenerator::encryptAES(key);
+		TOTPGenerator	TOTPGenerator(_verbose);
+		cipher = TOTPGenerator.encryptAES(key);
 		// TOTPGenerator::decryptAES(cipher);
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << "Error: while encrypting: " << e.what() << std::endl;
+		std::cerr << FMT_ERROR " while encrypting: " << e.what() << std::endl;
 	}
-	std::cout << " \nKEY encrypted." << std::endl;
+	if (_verbose)
+		std::cout << "\n" << FMT_DONE " Key encrypted and saved." << std::endl;
 	// Write the encrypted data in the file
 	file << cipher;
 	file.close();

@@ -5,17 +5,17 @@
 
 void printHelp()
 {
-    std::cout << "Usage: ./ft_otp [OPTIONS] <key file>\n"
-              << "Options:\n"
-              << "  -g, --generate     Generate and save the encrypted key\n"
-              << "  -k, --key          Generate password using the provided key\n"
-              << "  -v, --verbose      Enable verbose output\n"
-              << "  -h, --help         Show this help message and exit\n";
+    std::cout   << "Usage: ./ft_otp [OPTIONS] <key file>\n"
+                << "Options:\n"
+                << "  -g, --generate     Generate and save the encrypted key\n"
+                << "  -k, --key          Generate password using the provided key\n"
+                << "  -v, --verbose      Enable verbose output\n"
+                << "  -h, --help         Show this help message and exit\n";
 }
 
 void parseArgv(int argc, char *argv[], FileHandler *fileHandler, bool &verbose)
 {
-    const char *short_opts = "gkvh";
+    const char          *short_opts = "gkvh";
     const struct option long_opts[] = {
         {"generate", no_argument, nullptr, 'g'},
         {"key", no_argument, nullptr, 'k'},
@@ -23,9 +23,9 @@ void parseArgv(int argc, char *argv[], FileHandler *fileHandler, bool &verbose)
         {"help", no_argument, nullptr, 'h'},
         {nullptr, 0, nullptr, 0}
     };
-
-    int opt;
-    bool mode_set = false;
+    int                 opt;
+    bool                mode_set = false;
+    verbose = false;
 
     while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1)
     {
@@ -45,6 +45,7 @@ void parseArgv(int argc, char *argv[], FileHandler *fileHandler, bool &verbose)
             break;
         case 'v':
             verbose = true;
+			fileHandler->setVerbose(true);
             break;
         case 'h':
             printHelp();
@@ -57,6 +58,12 @@ void parseArgv(int argc, char *argv[], FileHandler *fileHandler, bool &verbose)
     if (!mode_set)
         throw std::invalid_argument("You must specify either -g (generate) or -k (key).");
 
+	/*
+	 * optind is an external global variable declared in the <unistd.h> header,
+	 * and it is used by functions like getopt and getopt_long in C to keep track
+	 * of the next argument to be processed. 
+	 * It is automatically managed by the getopt family of functions.
+	 */
     if (optind >= argc)
         throw std::invalid_argument("A key file must be provided.");
 

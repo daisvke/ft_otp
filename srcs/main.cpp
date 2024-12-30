@@ -1,36 +1,17 @@
 #include "FileHandler.hpp"
 #include "parse_args.hpp"
 
-void parseArgv(int argc, char *argv[], FileHandler *fileHandler)
-{
-	if (argc != 3 ||
-		// If neither "-g" nor "-k" is found, that's an error
-		(argv[1][0] != '-' && argv[2][0] != '-') ||
-		((argv[1][1] != 'g' && argv[2][1] != 'g') &&
-		 (argv[1][1] != 'k' && argv[2][1] != 'k')))
-		throw std::invalid_argument("expecting ./ft_otp -<g/k> <key file>");
-
-	if (argv[1][0] == '-')
-	{
-		fileHandler->setFilename(argv[2]);
-		argv[1][1] == 'g' ? fileHandler->setMode(OTP_MODE_SAVE_KEY) : fileHandler->setMode(OTP_MODE_GEN_PWD);
-	}
-	else
-	{
-		fileHandler->setFilename(argv[1]);
-		argv[2][1] == 'g' ? fileHandler->setMode(OTP_MODE_SAVE_KEY) : fileHandler->setMode(OTP_MODE_GEN_PWD);
-	}
-}
-
 // Encrypt and save the key to an external file (-g)
-void saveKeyToOutFile(FileHandler *filehandler)
+void saveKeyToOutFile(FileHandler *fileHandler, bool verbose)
 {
 	try
 	{
+		fileHandler->setVerbose(verbose);
 		// Get the original secret from the given file
-		std::string key = filehandler->getKeyFromInFile();
+		std::string key = fileHandler->getKeyFromInFile();
 		// Encrypt and save the key to the outfile
-		filehandler->saveKeyToOutFile(key);
+		if (key.empty() == false)
+			fileHandler->saveKeyToOutFile(key);
 	}
 	catch (std::exception &e)
 	{
@@ -40,32 +21,35 @@ void saveKeyToOutFile(FileHandler *filehandler)
 }
 
 // Generate the TOTP key from the given secret key (-k)
-void generateTOTPKey(FileHandler *filehandler)
+void generateTOTPKey(FileHandler *filehandler, bool verbose)
 {
 	std::string TOTPKey;
 	try
 	{
 		// Retrieve and decrypt the saved key from the file
-		const std::string key = filehandler->getKeyFromInFile();
+		const std::string	key = filehandler->getKeyFromInFile();
 		// Generate the TOTP code
-		TOTPKey = TOTPGenerator::generateTOTPHmacSha1(key);
+		TOTPGenerator		TOTPGenerator(verbose);
+		TOTPKey = TOTPGenerator.generateTOTPHmacSha1(key);
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << FMT_ERROR " " << e.what() << std::endl;
 		exit(1);
 	}
-	std::cout << "\n" FMT_DONE " Generated TOTP key: " << std::endl;
+	if (verbose)
+		std::cout << "\n" FMT_DONE " Generated TOTP key: " << std::endl;
 	std::cout << TOTPKey << std::endl;
 }
 
 int main(int argc, char *argv[])
 {
 	FileHandler fileHandler;
+	bool		verbose;
 
 	try
 	{ // Parse the given arguments
-		parseArgv(argc, argv, &fileHandler);
+		parseArgv(argc, argv, &fileHandler, verbose);
 	} catch (std::exception &e)
 	{
 		std::cerr << FMT_ERROR " Invalid argument: " << e.what() << std::endl;
@@ -74,10 +58,10 @@ int main(int argc, char *argv[])
 
 	// If we are in '-g' mode, we will encrypt and save the key
 	if (fileHandler.getMode() == OTP_MODE_SAVE_KEY)
-		saveKeyToOutFile(&fileHandler);
+		saveKeyToOutFile(&fileHandler, verbose);
 	else
 	{ // If we are in '-k' mode, we will retrieve that key and produce a TOTP code
-		generateTOTPKey(&fileHandler);
+		generateTOTPKey(&fileHandler, verbose);
 	}
 
 	return 0;

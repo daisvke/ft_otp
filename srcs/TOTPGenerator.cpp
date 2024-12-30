@@ -1,7 +1,7 @@
 #include "TOTPGenerator.hpp"
 using namespace CryptoPP;
 
-TOTPGenerator::TOTPGenerator() {}
+TOTPGenerator::TOTPGenerator(bool verbose): _verbose(verbose) {}
 TOTPGenerator::~TOTPGenerator() {}
 
 // TODO Check if size > 64
@@ -40,7 +40,8 @@ std::string TOTPGenerator::encryptAES(std::string plain)
     HexEncoder      encoder(new FileSink(std::cout));
     std::string     cipher;
 
-    std::cout << "Plain text: " << plain << std::endl;
+    if (_verbose)
+        std::cout << "Plain text: " << plain << std::endl;
 
     try
     {
@@ -60,20 +61,22 @@ std::string TOTPGenerator::encryptAES(std::string plain)
         exit(1);
     }
 
-    std::cout << "Key: ";
-    encoder.Put(key, key.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
+    if (_verbose) {
+        std::cout << "Key: ";
+        encoder.Put(key, key.size());
+        encoder.MessageEnd();
+        std::cout << std::endl;
 
-    std::cout << "IV: ";
-    encoder.Put(iv, iv.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
+        std::cout << "IV: ";
+        encoder.Put(iv, iv.size());
+        encoder.MessageEnd();
+        std::cout << std::endl;
 
-    std::cout << "Cipher text: ";
-    encoder.Put((const byte *)&cipher[0], cipher.size());
-    encoder.MessageEnd();
-    std::cout << std::endl;
+        std::cout << "Cipher text: ";
+        encoder.Put((const byte *)&cipher[0], cipher.size());
+        encoder.MessageEnd();
+        std::cout << std::endl;
+    }
 
     return cipher;
 }
@@ -146,12 +149,12 @@ std::vector<uint8_t> decodeBase32RFC4648(const std::string &base32String)
  *  In case the given string is not a Hex/Base32 key,
  *  an 'invalid_argument' exception is thrown.
  */
-SecByteBlock DecodeKey(const std::string &key)
+SecByteBlock TOTPGenerator::DecodeKey(const std::string &key)
 {
     SecByteBlock decodedKey;
     // bool            isHex = true, isBase32 = true;
 
-    uint8_t keyFormat = TOTPGenerator::isValidHexOrBase32(key);
+    uint8_t keyFormat = isValidHexOrBase32(key);
     // Decode the key based on its format
     if (keyFormat & OTP_KEYFORMAT_HEX)
     {
@@ -161,28 +164,33 @@ SecByteBlock DecodeKey(const std::string &key)
         size_t  size = decoder.MaxRetrievable();
         decodedKey.resize(size);
         decoder.Get(decodedKey, size);
-        std::cout << "Hex Key: ";
-        for (size_t i = 0; i < decodedKey.size(); ++i)
-        {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(decodedKey[i]);
+
+        if (_verbose) {
+            std::cout << "Hex Key: ";
+            for (size_t i = 0; i < decodedKey.size(); ++i)
+            {
+                std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(decodedKey[i]);
+            }
+            std::cout << std::dec << std::endl;
         }
-        std::cout << std::dec << std::endl;
 
         return decodedKey;
     }
     else if (keyFormat & OTP_KEYFORMAT_BASE32)
     {
-        std::cout << "Base32 secret: " << key << std::endl;
+        if (_verbose) {
+            std::cout << "Base32 secret: " << key << std::endl;
 
-        std::vector<uint8_t> decodedByteVector = decodeBase32RFC4648(key);
-        SecByteBlock decodedKey(decodedByteVector.data(), decodedByteVector.size());
-        std::cout << "Decoded Base32 Key: ";
-        for (size_t i = 0; i < decodedKey.size(); ++i)
-        {
-            std::cout << std::hex << std::setw(2) << std::setfill('0')
-                << static_cast<int>(decodedKey[i]) << std::dec;
+            std::vector<uint8_t> decodedByteVector = decodeBase32RFC4648(key);
+            SecByteBlock decodedKey(decodedByteVector.data(), decodedByteVector.size());
+            std::cout << "Decoded Base32 Key: ";
+            for (size_t i = 0; i < decodedKey.size(); ++i)
+            {
+                std::cout << std::hex << std::setw(2) << std::setfill('0')
+                    << static_cast<int>(decodedKey[i]) << std::dec;
+            }
+            std::cout << std::endl;
         }
-        std::cout << std::endl;
         return decodedKey;
     }
     else throw std::invalid_argument("Key must be in Base32 or Hex format.");
@@ -227,10 +235,8 @@ static void ConvertToBigEndianIfNeeded(uint64_t counter, uint8_t *outputBuffer)
     }
 }
 
-static CryptoPP::SecByteBlock computeCounter(uint64_t timeStep)
+CryptoPP::SecByteBlock TOTPGenerator::computeCounter(uint64_t timeStep)
 {
-    std::cout << "Step size (seconds): " << timeStep << std::endl;
-
     // Calculate the current time in seconds
     int64_t currentTime =
         std::chrono::duration_cast<std::chrono::seconds>(
@@ -238,14 +244,16 @@ static CryptoPP::SecByteBlock computeCounter(uint64_t timeStep)
                 .time_since_epoch())
             .count();
 
-    std::cout << "Current time: " << currentTime << std::endl;
-
     uint64_t counter = currentTime / timeStep;
     CryptoPP::SecByteBlock counterByteArray(8);
 
     // Print the counter both in uppercase Hex and decimal formats
-    std::cout << "Counter: 0X" << std::uppercase << std::hex << counter
-              << std::dec << " (" << counter << ")" << std::endl;
+    if (_verbose) {
+        std::cout << "Step size (seconds): " << timeStep << std::endl;
+        std::cout << "Current time: " << currentTime << std::endl;
+        std::cout << "Counter: 0X" << std::uppercase << std::hex << counter
+            << std::dec << " (" << counter << ")" << std::endl;
+    }
 
     // Get a raw bytes representation of the counter (convert if needed)
     ConvertToBigEndianIfNeeded(counter, counterByteArray);
@@ -280,7 +288,6 @@ std::string TOTPGenerator::generateTOTPHmacSha1(
 
         // Create an HMAC (Hash-based Message Authentication Code) object with SHA-1,
         // as defined in RFC 2104 [BCK2].
-        std::cout << "TOTP mode: HMAC-SHA1" << std::endl;
         CryptoPP::HMAC<CryptoPP::SHA1> hmac(
             decodedKey, decodedKey.size());
 
@@ -298,13 +305,16 @@ std::string TOTPGenerator::generateTOTPHmacSha1(
         hmac.CalculateDigest(hmacDigest, counterByteArray, counterByteArraySize);
 
         // Print the resulted HMAC digest
-        std::cout << "HMAC-SHA1: ";
-        for (size_t i = 0; i < sizeof(hmacDigest); ++i)
-        {
-            std::cout << std::hex << std::setw(2) << std::setfill('0')
-                      << static_cast<int>(hmacDigest[i]);
+        if (_verbose) {
+            std::cout << "TOTP mode: HMAC-SHA1" << std::endl;
+            std::cout << "HMAC-SHA1: ";
+            for (size_t i = 0; i < sizeof(hmacDigest); ++i)
+            {
+                std::cout << std::hex << std::setw(2) << std::setfill('0')
+                        << static_cast<int>(hmacDigest[i]);
+            }
+            std::cout << std::dec << std::endl;
         }
-        std::cout << std::dec << std::endl;
 
         /*
             As the output of the HMAC-SHA-1 calculation is 160 bits,

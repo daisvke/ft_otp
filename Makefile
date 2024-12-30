@@ -99,13 +99,13 @@ process_test_key = \
 	@echo "$(INFO) Testing with a $(2) key..."; \
 	echo "$(INFO) Generating and saving the encrypted key to the external file 'ft_otp.key'..."; \
 	echo "$(INFO) Running ./$(NAME) -g with $(1) file...\n"; \
-	./ft_otp -g $(1); \
+	./ft_otp -g $(1) -v; \
 	if [ $$? -eq 0 ]; then \
 		echo "$(DONE)"; \
 		echo "--------------------------------------------------"; \
 		echo "$(INFO) Decoding the encrypted key and generating a TOTP code from it..."; \
 		echo "$(INFO) Running ./$(NAME) -k with $(ENCRYPTED_KEY_FILE) file...\n"; \
-		./ft_otp $(ENCRYPTED_KEY_FILE) -k; \
+		./ft_otp $(ENCRYPTED_KEY_FILE) -k -v; \
 		if [ $$? -eq 0 ]; then \
 			echo "$(DONE)"; \
 		else \
