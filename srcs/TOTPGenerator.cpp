@@ -4,7 +4,6 @@ using namespace CryptoPP;
 TOTPGenerator::TOTPGenerator(bool verbose): _verbose(verbose) {}
 TOTPGenerator::~TOTPGenerator() {}
 
-// TODO Check if size > 64
 uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
 {
     // By default Hex and Base32 are set to true
