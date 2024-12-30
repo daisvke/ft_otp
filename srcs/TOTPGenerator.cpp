@@ -57,7 +57,7 @@ std::string TOTPGenerator::encryptAES(std::string plain)
     }
     catch (const Exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << FMT_ERROR << " " << e.what() << std::endl;
         exit(1);
     }
 
@@ -103,7 +103,7 @@ std::string TOTPGenerator::decryptAES(std::string &cipher)
     }
     catch (const Exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << FMT_ERROR << " " << e.what() << std::endl;
         exit(1);
     }
     return recovered;
@@ -178,11 +178,12 @@ SecByteBlock TOTPGenerator::DecodeKey(const std::string &key)
     }
     else if (keyFormat & OTP_KEYFORMAT_BASE32)
     {
+        std::vector<uint8_t> decodedByteVector = decodeBase32RFC4648(key);
+        SecByteBlock decodedKey(decodedByteVector.data(), decodedByteVector.size());
+
         if (_verbose) {
             std::cout << "Base32 secret: " << key << std::endl;
 
-            std::vector<uint8_t> decodedByteVector = decodeBase32RFC4648(key);
-            SecByteBlock decodedKey(decodedByteVector.data(), decodedByteVector.size());
             std::cout << "Decoded Base32 Key: ";
             for (size_t i = 0; i < decodedKey.size(); ++i)
             {

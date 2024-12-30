@@ -100,7 +100,8 @@ process_test_key = \
 	echo "$(INFO) Generating and saving the encrypted key to the external file 'ft_otp.key'..."; \
 	echo "$(INFO) Running ./$(NAME) -g with $(1) file...\n"; \
 	./ft_otp -g $(1) -v; \
-	if [ $$? -eq 0 ]; then \
+	GEN_STATUS=$$?; \
+	if [ $$GEN_STATUS -eq 0 ]; then \
 		echo "$(DONE)"; \
 		echo "--------------------------------------------------"; \
 		echo "$(INFO) Decoding the encrypted key and generating a TOTP code from it..."; \
@@ -118,10 +119,21 @@ process_test_key = \
 	echo "$(INFO) Comparing our TOTP code to the one delivered by 'oathtool'..."; \
 	echo "$(INFO) Running oathtool --totp -v with $(1) file...\n"; \
 	oathtool --totp $(3) $(shell cat $(1)) -v; \
-	if [ $$? -eq 0 ]; then \
-		echo "$(DONE)"; \
+	GENERATED_TOTP=$$(./ft_otp -k $(ENCRYPTED_KEY_FILE)); \
+	EXPECTED_TOTP=$$(oathtool --totp $(3) $(shell cat $(1))); \
+	EXP_STATUS=$$?; \
+	echo "--------------------------------------------------"; \
+	echo "ft_otp status: $$GEN_STATUS, oathtool status: $$EXP_STATUS"; \
+	if [ $$GEN_STATUS -eq 0 ] && [ $$EXP_STATUS -eq 0 ]; then \
+		echo "Generated TOTP:\t$$GENERATED_TOTP"; \
+		echo "Expected TOTP:\t$$EXPECTED_TOTP"; \
+		if [ "$$GENERATED_TOTP" = "$$EXPECTED_TOTP" ]; then \
+			echo "$(DONE) TOTPs match"; \
+		else \
+			echo "$(ERROR) TOTPs do not match."; \
+		fi; \
 	else \
-		echo "$(ERROR)"; \
+		echo "$(ERROR) Command execution failed."; \
 	fi
 
 # Test all keys

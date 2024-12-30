@@ -35,6 +35,13 @@ pkg install cryptopp
 // Install
 make
 
+// Usage: ./ft_otp [OPTIONS] <key file>
+Options:
+  -g, --generate     Generate and save the encrypted key
+  -k, --key          Generate password using the provided key
+  -v, --verbose      Enable verbose output
+  -h, --help         Show this help message and exit
+
 // Generate the key
 ./ft_otp -g <key_file>
 
