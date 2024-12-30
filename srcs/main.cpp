@@ -1,4 +1,5 @@
 #include "FileHandler.hpp"
+#include "parse_args.hpp"
 
 void parseArgv(int argc, char *argv[], FileHandler *fileHandler)
 {
