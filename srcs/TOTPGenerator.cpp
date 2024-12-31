@@ -13,7 +13,23 @@ uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
 
     for (char c : str)
     {
-        // Check for valid hex characters
+        /*
+         * Check for valid hex characters using bitwise operations.
+         * 
+         * Bitwise operations are faster than other operations because they
+         * operate directly on binary digits at the hardware level.
+         * 
+         * Here, keyFormat & OTP_KEYFORMAT_HEX is checking if OTP_KEYFORMAT_HEX
+         * flag is set in keyFormat.
+         *  Ex.: keyFormat (00000001) & OTP_KEYFORMAT_HEX (00000001) = 00000001 (flag is set)
+         * 
+         * On the other hand, keyFormat ^= OTP_KEYFORMAT_HEX will toggle the
+         * OTP_KEYFORMAT_HEX flag in keyFormat.
+         *  Ex.: keyFormat (00000001) ^⁼ OTP_KEYFORMAT_HEX (00000001)
+         *      <=> keyFormat (00000001) = keyFormat ^ OTP_KEYFORMAT_HEX (00000001)
+         *      = 00000000 (unset OTP_KEYFORMAT_HEX in keyFormat)
+         * 
+         */
         if ((keyFormat & OTP_KEYFORMAT_HEX) && !std::isxdigit(c))
             keyFormat ^= OTP_KEYFORMAT_HEX;
 
