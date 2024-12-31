@@ -6,6 +6,8 @@ TOTPGenerator::~TOTPGenerator() {}
 
 uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
 {
+    if (str.size() < OTP_MIN_KEY_STRENGTH)
+        return 0;
     // By default Hex and Base32 are set to true
     uint8_t keyFormat = OTP_KEYFORMAT_DEFAULT;
 

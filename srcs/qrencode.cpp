@@ -105,26 +105,26 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
 {
     try
     {
-        /*
-        * Generate a QR Code from the given TOTP URI.
-        *
-        * The TOTP URI should be in Key URI Format:
-        * 	otpauth://TYPE/LABEL?PARAMETERS
-        *
-        * - Scheme: otpauth:// specifies it's an OTP QR code.
-        * - Type: totp specifies the type of OTP (time-based in this case).
-        * - Label: Example:alice@example.com provides a human-readable identifier.
-        * - Parameters:
-        * 		secret (required): The hexadecimal/base32-encoded shared secret key.
-        * 		issuer (strongly recommanded): A string identifying the provider or service.
-        *		digits (optional): Number of digits in the OTP. Default is 6.
-        *		counter: For TOTP, there is no "counter" included in the QR code because
-        * 			it is derived from the current time.
-        * 		period (optional): Time step in seconds. Default is 30.
-        *
-        * Ex.:
-        * 	otpauth://totp/MyService:myuser@example.com?secret=BASE32SEED&issuer=MyService
-        */
+    /*
+    * Generate a QR Code from the given TOTP URI.
+    *
+    * The TOTP URI should be in Key URI Format:
+    * 	otpauth://TYPE/LABEL?PARAMETERS
+    *
+    * - Scheme: otpauth:// specifies it's an OTP QR code.
+    * - Type: totp specifies the type of OTP (time-based in this case).
+    * - Label: Example:alice@example.com provides a human-readable identifier.
+    * - Parameters:
+    * 		secret (required): The hexadecimal/base32-encoded shared secret key.
+    * 		issuer (strongly recommanded): A string identifying the provider or service.
+    *		digits (optional): Number of digits in the OTP. Default is 6.
+    *		counter: For TOTP, there is no "counter" included in the QR code because
+    * 			it is derived from the current time.
+    * 		period (optional): Time step in seconds. Default is 30.
+    *
+    * Ex.:
+    * 	otpauth://totp/MyService:myuser@example.com?secret=BASE32SEED&issuer=MyService
+    */
 
         // Create the TOTP URI from which the QR code will be generated
         std::ostringstream oss;
