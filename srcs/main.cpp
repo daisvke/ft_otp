@@ -1,5 +1,6 @@
 #include "FileHandler.hpp"
-#include "parse_args.hpp"
+#include "ft_otp.hpp"
+#include "qrencode.hpp"
 
 // Encrypt and save the key to an external file (-g)
 void saveKeyToOutFile(FileHandler *fileHandler, bool verbose)
@@ -9,9 +10,14 @@ void saveKeyToOutFile(FileHandler *fileHandler, bool verbose)
 		fileHandler->setVerbose(verbose);
 		// Get the original secret from the given file
 		std::string key = fileHandler->getKeyFromInFile();
-		// Encrypt and save the key to the outfile
+
 		if (key.empty() == false)
+		{
+			// Encrypt and save the key to the outfile
 			fileHandler->saveKeyToOutFile(key);
+			// Create QR code from the secret key
+			generateQRcodePNGFromSecret(key, verbose);
+		}
 	}
 	catch (std::exception &e)
 	{

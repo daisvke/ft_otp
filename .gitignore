@@ -1,5 +1,9 @@
-ft_otp
 .vscode
+
+# Test files
+ft_otp.key
+*.png
+ft_otp
 
 # Temp files
 .*.sw?

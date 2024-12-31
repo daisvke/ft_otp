@@ -55,9 +55,8 @@ private:
 	{
 	public:
 		OpenFileException() throw() {}
-		const char *what() const throw()
-		{
-			return "\033[31mFailed to open the file!\033[0m";
+		const char *what() const throw() {
+			return "Failed to open the file.";
 		}
 		~OpenFileException() throw() {}
 	};

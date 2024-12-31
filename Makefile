@@ -7,7 +7,7 @@ CXX					=	clang++
 CXXFLAGS			=	-std=c++11 -Wall -Wextra -Werror
 INCS_DIR			=	incs/
 INCS				=	-I incs/
-LDFLAGS				=	-lcryptopp
+LDFLAGS				=	-lcryptopp -lqrencode -lpng
 INCS_FILES			=	$(wildcard $(INCS_DIR)*.hpp)
 RM					=	rm -rf
 

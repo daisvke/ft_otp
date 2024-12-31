@@ -27,7 +27,6 @@
 // For TOTP HMAC-SHA1 hash
 #include <iomanip>
 #include <chrono>
-#include <sstream>
 #include <openssl/hmac.h>
 
 #include "ascii_format.hpp"
