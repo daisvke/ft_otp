@@ -11,7 +11,7 @@ void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale) {
     int size = qrcode->width;
     int png_width = size * scale; // Factor to scale up each QR code module for better readability.
     int margin = 4 * scale; // Space around the QR code, scaled for better readability.
-    int total_size = png_width + 2 * margin; // Total size of the PNG image
+    int total_size = png_width + 2 * margin; // Total width size of the PNG image (square)
 
     // Open the outfile in binary write mode.
     FILE *fp = fopen(filename, "wb");
@@ -55,7 +55,8 @@ void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale) {
 
     // Write PNG header
     png_set_IHDR(
-        png, info, total_size, total_size, 8, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
+        png, info, total_size, total_size, 8,
+        PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE,
         PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT
         );
     // Write the header to the PNG file
@@ -144,7 +145,7 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
             std::string filetype = ".png";
             std::string filename = OTP_QRCODE_FILE + filetype;
 
-            saveQRCodeAsPNG(qrcode, filename.c_str(), 10); // Scale of 10
+            saveQRCodeAsPNG(qrcode, filename.c_str(), OTP_QRCODE_SCALE);
             QRcode_free(qrcode);
         } else {
             throw OpenFileException();

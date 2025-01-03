@@ -13,7 +13,9 @@
 # include "ascii_format.hpp"
 
 # define OTP_PROJECT_NAME	"ft_otp"
-# define OTP_QRCODE_FILE	"qrcode" // Name of the PNG outfile for the QR code
+# define OTP_QRCODE_FILE	"qrcode"	// Name of the PNG outfile for the QR code
+# define OTP_QRCODE_SCALE	5			// The scale of the QR code's PNG image (if too
+										// small it will be difficult to read it)
 
 void	generateQRCode(const std::string& totpURI, const std::string& filename);
 void	generateQRcodePNGFromSecret(const std::string secret, bool verbose);
