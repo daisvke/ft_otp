@@ -129,13 +129,25 @@ At first, we were trying to decode Base32 keys with `Base32Decoder`:
 	decodedKey.resize(size);
 	decoder.Get(decodedKey, size);
 ```
-However, the decoded string it returned didn't match the one returned by `oathtool --totp -b $(cat key.base32) -v`.<br />
-
+However, the decoded string it returned didn't match the one returned by `oathtool --totp -b $(cat key.base32) -v`.
+<br /><br />
 We thought that the padding character `=` was handled differently, so we tried our code and oathtool both with and without the padding character at the end of the key string.<br />
 However it did not change anything either with our code or with oathtool.<br />
+<br /><br />
+So, we concluded that the key difference between our implementation (`decodeBase32RFC4648()`) and the behavior of oathtool was likely rooted in how the Base32 decoding process was handled, particularly with respect to strict adherence to <a href="https://datatracker.ietf.org/doc/html/rfc4648#section-6">RFC 4648</a>.<br />
+<br /><br />
+In fact, we found that the default `Base32Decoder` code was based on <a href="http://www.ietf.org/proceedings/51/I-D/draft-ietf-idn-dude-02.txt">Differential Unicode Domain Encoding (DUDE)</a>, which doesn't even use the same character set:
 
-So, the key difference between our implementation and the behavior of oathtool is likely rooted in how the Base32 decoding process is handled, particularly with respect to strict adherence to RFC 4648.m
+```
+// DUDE Decoder's set of characters
 
+static const char base32[] = {
+  97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,     /* a-k */
+  109, 110,                                               /* m-n */
+  112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,  /* p-z */
+  50, 51, 52, 53, 54, 55, 56, 57                          /* 2-9 */
+};
+```
 
 ## Trouble shooting
 
