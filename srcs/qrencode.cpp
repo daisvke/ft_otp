@@ -1,6 +1,16 @@
 # include "qrencode.hpp"
 
 /*
+ * QR Code Generation for TOTP Secrets
+ *
+ *
+ * Steps to Generate the QR Code:
+ *  - A TOTP URI is created dynamically using the provided secret and project name.
+ *  - The URI is encoded into a QR code using the `qrencode` library.
+ *  - The generated QR code is saved as a PNG file in the current directory.
+ */
+
+/*
  * The generated output file should have a size of:
  *  (QR_width×scale+2×margin)×(QR_width×scale+2×margin).
  * For a scale of 10 and margin of 4 modules,
