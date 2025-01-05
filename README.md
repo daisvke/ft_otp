@@ -1,9 +1,7 @@
 # ft_otp
 
 ## Description
-This is a program that allows you to store
-an initial password in file, and that is capable of generating a new one time password
-every time it is requested.<br />
+This is a program that allows you to store an initial password in an encrypted file and that is capable of generating a new TOTP one time password every time it is requested.<br />
 
 ### Secret key
 * The `keys` folder contains a set of valid and invalid keys (for testing purpose). The valid keys are: `key.hex`, `key.base32`.
@@ -44,14 +42,14 @@ make
   -v, --verbose      Enable verbose output
   -h, --help         Show this help message and exit
 
-// Generate the key
-./ft_otp -g <key_file>
+// Generate the encrypted key file with its corresponding QR code
+./ft_otp -gk <key_file>
 
 The program receives as argument a hexadecimal key of at least 64 characters.
 The program stores this key safely in a file called ft_otp.key,
 which is encrypted with AES encryption using Crypto++.
 
-// Generate the temporary password
+// Generate the TOTP temporary password
 ./ft_otp -k ft_otp.key
 
 The program generates a new temporary password based on the encrypted key
