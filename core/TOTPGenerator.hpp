@@ -14,15 +14,15 @@
 #include <iomanip>
 
 // Crypto++
-#include <../cryptopp/cryptlib.h>
-#include <../cryptopp/modes.h>
-#include <../cryptopp/osrng.h>
-#include <../cryptopp/hex.h>
-#include <../cryptopp/files.h>
-#include <../cryptopp/hmac.h>
-#include <../cryptopp/sha.h>
-#include <../cryptopp/filters.h>
-#include <../cryptopp/base32.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/files.h>
+#include <cryptopp/hmac.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/base32.h>
 
 // For TOTP HMAC-SHA1 hash
 #include <iomanip>
