@@ -3,7 +3,7 @@
 #include "qrencode.hpp"
 
 // Encrypt and save the key to an external file (-g)
-void saveKeyToOutFile(FileHandler *fileHandler, bool verbose)
+void saveKeyToOutFile(FileHandler *fileHandler, bool qrCode, bool verbose)
 {
 	try
 	{
@@ -15,8 +15,8 @@ void saveKeyToOutFile(FileHandler *fileHandler, bool verbose)
 		{
 			// Encrypt and save the key to the outfile
 			fileHandler->saveKeyToOutFile(key);
-			// Create QR code from the secret key
-			generateQRcodePNGFromSecret(key, verbose);
+			// If QR code mode is set, create QR code from the secret key
+			if (qrCode) generateQRcodePNGFromSecret(key, verbose);
 		}
 	}
 	catch (std::exception &e)
@@ -62,9 +62,18 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	// If we are in '-g' mode, we will encrypt and save the key
-	if (fileHandler.getMode() == OTP_MODE_SAVE_KEY)
-		saveKeyToOutFile(&fileHandler, verbose);
+	/* If we are in '-g' mode, we will encrypt and save the key
+	 * The mode is checked with an & bitwise operation between the mode and the flag.
+	 * Ex.:
+	 *      mode   &   OTP_MODE_SAVE_KEY flag =  is set
+	 * 	  00000101            00000001          00000001
+	 */
+	uint8_t	mode = fileHandler.getMode();
+	if (mode & OTP_MODE_SAVE_KEY)
+	{
+		bool	qrCode = mode & OTP_MODE_GEN_QR; // Check if QR code flag is set
+		saveKeyToOutFile(&fileHandler, qrCode, verbose);
+	}
 	else
 	{ // If we are in '-k' mode, we will retrieve that key and produce a TOTP code
 		generateTOTPKey(&fileHandler, verbose);

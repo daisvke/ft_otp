@@ -37,9 +37,10 @@ sudo apt install libqrencode-dev
 make
 
 // Usage: ./ft_otp [OPTIONS] <key file>
-Options:
+// Options:
   -g, --generate     Generate and save the encrypted key
   -k, --key          Generate password using the provided key
+  -q, --qrcode       Generate a QR code containing the key (requires -g)
   -v, --verbose      Enable verbose output
   -h, --help         Show this help message and exit
 
@@ -87,12 +88,12 @@ make && ./ft_otp -g keys/key.base32hex
 ./ft_otp ft_otp.key -k
 oathtool --totp $(cat keys/key.base32hex) -v
 
-or: make err
+or: make bad
 
 // Tests
-make hex	// Run with a Hex secret key
-make b32	// Run with a Base32 secret key
-make err	// Run with a bad secret key
+make hex	  // Run with a Hex secret key
+make b32	  // Run with a Base32 secret key
+make bad	  // Run with a bad secret key
 make tests	// Run all tests
 ```
 

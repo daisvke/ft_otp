@@ -1,14 +1,14 @@
 #include "FileHandler.hpp"
 
-FileHandler::FileHandler() : _fileName(), _mode(), _verbose() {}
+FileHandler::FileHandler() : _fileName(), _mode(0), _verbose() {}
 
 FileHandler::~FileHandler() {}
 
 void FileHandler::setFilename(const char *fileName) { _fileName = fileName; }
-void FileHandler::setMode(otp_e_modes mode) { _mode = mode; }
+void FileHandler::setMode(uint8_t mode) { _mode ^= mode; }
 void FileHandler::setVerbose(bool verbose) { _verbose = verbose; }
 
-otp_e_modes FileHandler::getMode(void) const { return _mode; }
+uint8_t FileHandler::getMode(void) const { return _mode; }
 
 /**
  * @brief Read the key to be encrypted from the given filename.

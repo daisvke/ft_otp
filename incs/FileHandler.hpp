@@ -12,8 +12,9 @@
 
 enum otp_e_modes
 {
-	OTP_MODE_SAVE_KEY,
-	OTP_MODE_GEN_PWD
+	OTP_MODE_SAVE_KEY	= 1,
+	OTP_MODE_GEN_PWD	= 2,
+	OTP_MODE_GEN_QR		= 4
 };
 
 class FileHandler
@@ -24,11 +25,11 @@ public:
 
 	// Setters
 	void		setFilename(const char *fileName);
-	void		setMode(otp_e_modes mode);
+	void		setMode(uint8_t mode);
 	void		setVerbose(bool verbose);
 
 	// Getters
-	otp_e_modes	getMode(void) const;
+	uint8_t		getMode(void) const;
 
 	// Save key in outfile
 	std::string	getKeyFromInFile();
@@ -36,7 +37,7 @@ public:
 
 private:
 	const char *_fileName;
-	otp_e_modes _mode;
+	uint8_t		_mode;
 	bool		_verbose;
 
 	class InvalidKeyFormatException: public std::exception

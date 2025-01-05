@@ -16,6 +16,7 @@ HEX_KEY_FILE		=	keys/key.hex
 BASE32_KEY_FILE		=	keys/key.base32
 BAD_KEY_FILE		=	keys/key.base32hex
 ENCRYPTED_KEY_FILE	=	ft_otp.key
+KEY_QRCODE_FILE		=	qrcode.png
 
 
 # ==========================
@@ -99,7 +100,7 @@ process_test_key = \
 	@echo "$(INFO) Testing with a $(2) key..."; \
 	echo "$(INFO) Generating and saving the encrypted key to the external file 'ft_otp.key'..."; \
 	echo "$(INFO) Running ./$(NAME) -g with $(1) file...\n"; \
-	./ft_otp -g $(1) -v; \
+	./ft_otp -gq $(1) -v; \
 	GEN_STATUS=$$?; \
 	if [ $$GEN_STATUS -eq 0 ]; then \
 		echo "$(DONE)"; \
@@ -153,7 +154,7 @@ tests:
 	@echo "$(INFO) ##################################################"
 	@echo "$(INFO) #                  B A D   K E Y                 #"
 	@echo "$(INFO) ##################################################"
-	@$(MAKE) err
+	@$(MAKE) bad
 	@echo "$(INFO) Tests completed."
 
 # Targets to call a pseudo function for a specific key
@@ -163,7 +164,7 @@ hex: all
 b32: all
 	$(call process_test_key, $(BASE32_KEY_FILE), "Base32", "-b")
 
-err: all
+bad: all
 	$(call process_test_key, $(BAD_KEY_FILE), "bad")
 
 
@@ -172,7 +173,7 @@ err: all
 # ==========================
 
 clean:
-	$(RM) $(OBJS_DIR)
+	$(RM) $(OBJS_DIR) $(KEY_QRCODE_FILE)
 
 fclean: clean
 	$(RM) $(NAME)
