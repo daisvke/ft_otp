@@ -125,9 +125,17 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
     * - Scheme: otpauth:// specifies it's an OTP QR code.
     * - Type: totp specifies the type of OTP (time-based in this case).
     * - Label: Example:alice@example.com provides a human-readable identifier.
+	*   'Example' represents the issuer = the entity (e.g., a company,
+	*   application, or service) that issued the TOTP. Helps users differentiate 
+	*   between multiple TOTP accounts in their authenticator app.
     * - Parameters:
     * 		secret (required): The hexadecimal/base32-encoded shared secret key.
-    * 		issuer (strongly recommanded): A string identifying the provider or service.
+    * 		issuer (strongly recommanded): A string identifying the provider or service. 
+	*        It should have the same value as in 'Label'.
+    *        Older versions of authenticator apps used only the label's issuer to display
+	*        issuer information.
+    *        Including the issuer= parameter ensures that newer apps or libraries can
+	*        explicitly recognize the issuer.
     *		digits (optional): Number of digits in the OTP. Default is 6.
     *		counter: For TOTP, there is no "counter" included in the QR code because
     * 			it is derived from the current time.
@@ -143,7 +151,7 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
             << OTP_PROJECT_NAME
             << ":myuser@example.com?"
             << "secret=" << secret
-            << "&issuer=ft_otp";
+            << "&issuer=" << OTP_PROJECT_NAME;
 
         std::string totpUri = oss.str();
 
