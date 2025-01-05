@@ -28,6 +28,11 @@ Used for producing QRcodes.
 sudo apt install libqrencode-dev
 ```
 
+* PNG Library
+Used for producing QRcodes.
+```
+sudo apt install libpng-dev
+```
 
 ## Commands
 ```
@@ -180,6 +185,13 @@ static const char base32[] = {
   50, 51, 52, 53, 54, 55, 56, 57                          /* 2-9 */
 };
 ```
+
+
+## Graphic User Interface
+
+### Install Qt Creator
+Install the latest open source free version of Qt from the <a href="https://www.qt.io/download-qt-installer-oss">official website</a>.
+
 
 ## Trouble shooting
 
