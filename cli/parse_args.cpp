@@ -1,7 +1,7 @@
 #include <iostream>
 #include <getopt.h>
 #include <stdexcept>
-#include "FileHandler.hpp"
+#include "../core/FileHandler.hpp"
 
 void printHelp()
 {

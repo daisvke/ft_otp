@@ -1,6 +1,4 @@
-#include "FileHandler.hpp"
-#include "ft_otp.hpp"
-#include "qrencode.hpp"
+#include "ft_otp_cli.hpp"
 
 // Encrypt and save the key to an external file (-g)
 void saveKeyToOutFile(FileHandler *fileHandler, bool qrCode, bool verbose)

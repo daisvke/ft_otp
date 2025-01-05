@@ -1,3 +1,8 @@
+# =====================================================
+# This is the Makefile for the Command Line Interface
+#======================================================
+
+
 # ==========================
 # Build Configuration
 # ==========================
@@ -5,20 +10,17 @@
 NAME				=	ft_otp
 CXX					=	clang++
 CXXFLAGS			=	-std=c++11 -Wall -Wextra -Werror
-INCS_DIR			=	incs/
-INCS				=	-I incs/
 LDFLAGS				=	-lcryptopp -lqrencode -lpng
-INCS_FILES			=	$(wildcard $(INCS_DIR)*.hpp)
 RM					=	rm -rf
 
 # Secret key files
-HEX_KEY_FILE		=	keys/key.hex
-BASE32_KEY_FILE		=	keys/key.base32
-BAD_KEY_FILE		=	keys/key.base32hex
+HEX_KEY_FILE		=	../keys/key.hex
+BASE32_KEY_FILE		=	../keys/key.base32
+BAD_KEY_FILE		=	../keys/key.base32hex
 ENCRYPTED_KEY_FILE	=	ft_otp.key
 KEY_QRCODE_FILE		=	qrcode.png
 
-
+ 
 # ==========================
 # ANSI Escape Codes
 # ==========================
@@ -36,40 +38,40 @@ DONE		= $(GREEN)[DONE]$(RESET)
 
 
 # ==========================
-# Source Files
+# Source & Header Files
 # ==========================
 
-SRCS_DIR			=	srcs/
-SRCS_FILES			=	$(notdir $(wildcard $(SRCS_DIR)*.cpp))
-SRCS				=	$(addprefix $(SRCS_DIR), $(SRCS_FILES))
+# 'core' folder is shared with GUI
+INCS		=	$(wildcard *.hpp) $(wildcard ../core/*.hpp)
+SRCS		=	$(wildcard *.cpp) $(wildcard ../core/*.cpp)
 
 
 # ==========================
 # Object Files
 # ==========================
 
-OBJS_DIR			=	objs/
-OBJS_FILES			=	$(SRCS_FILES:.cpp=.o)
-OBJS				=	$(addprefix $(OBJS_DIR), $(OBJS_FILES))
+OBJS_DIR		=	objs/
+OBJS_DIR_CORE	=	core/
+OBJS			=	$(SRCS:%.cpp=$(OBJS_DIR)%.o)
 
 
 # ==========================
 # Building
 # ==========================
 
-.PHONY: all clean fclean re hex b32 err tests
+.PHONY: all clean fclean re hex b32 bad tests
 
 all: $(NAME)
 
 # Main target
-$(NAME): $(OBJS) $(INCS_FILES)
+$(NAME): $(OBJS)
 	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
 # Object files
-$(OBJS_DIR)%.o: $(SRCS_DIR)%.cpp $(INCS_DIR)
-	@mkdir -p $(OBJS_DIR)
-	@echo "$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $<"; \
-		$(CXX) $(INCS) $(CXXFLAGS) -o $@ -c $< || \
+$(OBJS_DIR)%.o: %.cpp $(INCS)
+	@mkdir -p $(dir $@)
+	@echo "$(CXX) $(INCS) $(CXXFLAGS) -c $<"; \
+		$(CXX) $(CXXFLAGS) -c $< -o $@ || \
 		{	echo "\n$(ERROR) Compilation failed for $<."; \
 			echo "$(INFO) Possible reason: Crypto++ library is not installed or correctly linked."; \
 			echo "$(INFO)"; \
@@ -173,7 +175,7 @@ bad: all
 # ==========================
 
 clean:
-	$(RM) $(OBJS_DIR) $(KEY_QRCODE_FILE)
+	$(RM) $(OBJS_DIR_CORE) $(OBJS_DIR) $(KEY_QRCODE_FILE)
 
 fclean: clean
 	$(RM) $(NAME)
