@@ -150,6 +150,9 @@ This program generates a QR code for a TOTP (Time-based One-Time Password) secre
 
 
 ## Endianness
+Endianness determines the byte order of data in memory. 
+
+* In TOTP, the timestamp must be in big-endian format (most significant byte first) when passed to the HMAC function. Incorrect endianness leads to invalid TOTP codes, as the hash depends on the precise byte order. So we had to ensure the timestamp matched the expected endianness for consistent results.
 * To check the endianness of your system:<br />
 `lscpu | grep Order		# Output: Byte Order:     Little Endian`
 
