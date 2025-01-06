@@ -111,11 +111,9 @@ void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale) {
     fclose(fp); // Close the file
 }
 
-// Create QR code from the secret key
-void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
+// Create a QR code corresponding to the given URI
+QRcode *generateQRCodeFromURI(const std::string secret, bool verbose)
 {
-    try
-    {
     /*
     * Generate a QR Code from the given TOTP URI.
     *
@@ -125,17 +123,17 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
     * - Scheme: otpauth:// specifies it's an OTP QR code.
     * - Type: totp specifies the type of OTP (time-based in this case).
     * - Label: Example:alice@example.com provides a human-readable identifier.
-	*   'Example' represents the issuer = the entity (e.g., a company,
-	*   application, or service) that issued the TOTP. Helps users differentiate 
-	*   between multiple TOTP accounts in their authenticator app.
+    *   'Example' represents the issuer = the entity (e.g., a company,
+    *   application, or service) that issued the TOTP. Helps users differentiate
+    *   between multiple TOTP accounts in their authenticator app.
     * - Parameters:
     * 		secret (required): The hexadecimal/base32-encoded shared secret key.
-    * 		issuer (strongly recommanded): A string identifying the provider or service. 
-	*        It should have the same value as in 'Label'.
+    * 		issuer (strongly recommanded): A string identifying the provider or service.
+    *        It should have the same value as in 'Label'.
     *        Older versions of authenticator apps used only the label's issuer to display
-	*        issuer information.
+    *        issuer information.
     *        Including the issuer= parameter ensures that newer apps or libraries can
-	*        explicitly recognize the issuer.
+    *        explicitly recognize the issuer.
     *		digits (optional): Number of digits in the OTP. Default is 6.
     *		counter: For TOTP, there is no "counter" included in the QR code because
     * 			it is derived from the current time.
@@ -145,20 +143,30 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
     * 	otpauth://totp/MyService:myuser@example.com?secret=BASE32SEED&issuer=MyService
     */
 
-        // Create the TOTP URI from which the QR code will be generated
-        std::ostringstream oss;
-        oss << "otpauth://totp/"
-            << OTP_PROJECT_NAME
-            << ":myuser@example.com?"
-            << "secret=" << secret
-            << "&issuer=" << OTP_PROJECT_NAME;
+    // Create the TOTP URI from which the QR code will be generated
+    std::ostringstream oss;
+    oss << "otpauth://totp/"
+        << OTP_PROJECT_NAME
+        << ":myuser@example.com?"
+        << "secret=" << secret
+        << "&issuer=" << OTP_PROJECT_NAME;
 
-        std::string totpUri = oss.str();
+    std::string totpUri = oss.str();
 
-        if (verbose)
-            std::cout << FMT_INFO " Created TOTP URI: " << totpUri << std::endl;
+    if (verbose)
+        std::cout << FMT_INFO " Created TOTP URI: " << totpUri << std::endl;
 
-        QRcode *qrcode = QRcode_encodeString(totpUri.c_str(), 0, QR_ECLEVEL_L, QR_MODE_8, 1);
+    // Return the QR code
+    return QRcode_encodeString(totpUri.c_str(), 0, QR_ECLEVEL_L, QR_MODE_8, 1);
+}
+
+// Create QR code from the secret key
+void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
+{
+    try
+    {   
+        QRcode *qrcode = generateQRCodeFromURI(secret, verbose);
+
         if (qrcode) {
             std::string filetype = ".png";
             std::string filename = OTP_QRCODE_FILE + filetype;

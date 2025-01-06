@@ -17,6 +17,8 @@ set(CORE_SOURCES
         ../core/FileHandler.cpp
         ../core/TOTPGenerator.hpp
         ../core/FileHandler.hpp
+        ../core/qrencode.cpp
+        ../core/qrencode.hpp
 )
 
 set(PROJECT_SOURCES

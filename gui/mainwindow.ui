@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>250</height>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,50 +20,37 @@
       <x>10</x>
       <y>130</y>
       <width>511</width>
-      <height>111</height>
+      <height>101</height>
      </rect>
     </property>
     <property name="title">
      <string>TOTP</string>
     </property>
-    <widget class="QPushButton" name="btnGenerate">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>80</y>
-       <width>131</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Generate</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="labelTOTP">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>30</y>
+       <x>160</x>
+       <y>40</y>
        <width>41</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>TOTP:</string>
+      <string>Code:</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineTOTP">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>210</x>
        <y>30</y>
-       <width>71</width>
-       <height>22</height>
+       <width>91</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>18</pointsize>
       </font>
      </property>
      <property name="text">
@@ -77,13 +64,21 @@
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>50</y>
+       <y>70</y>
        <width>331</width>
        <height>21</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </widget>
@@ -107,6 +102,9 @@
        <width>461</width>
        <height>22</height>
       </rect>
+     </property>
+     <property name="placeholderText">
+      <string>                                                   &gt; Enter your secret key &lt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelKey">
@@ -134,10 +132,85 @@
      <property name="text">
       <string/>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
     </widget>
    </widget>
-   <zorder>boxKey</zorder>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>511</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>QR Code</string>
+    </property>
+    <widget class="QLabel" name="QRLabel">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>30</y>
+       <width>191</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>13</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="QRErrorLabel">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>210</y>
+       <width>331</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="btnGenerate">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>500</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Generate</string>
+    </property>
+   </widget>
    <zorder>boxTOTP</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>boxKey</zorder>
+   <zorder>btnGenerate</zorder>
   </widget>
  </widget>
  <resources/>

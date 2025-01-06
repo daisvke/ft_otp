@@ -18,6 +18,7 @@
 										// small it will be difficult to read it)
 
 void	generateQRCode(const std::string& totpURI, const std::string& filename);
+QRcode *generateQRCodeFromURI(const std::string secret, bool verbose);
 void	generateQRcodePNGFromSecret(const std::string secret, bool verbose);
 
 class QRCodeGenerationException: public std::exception
