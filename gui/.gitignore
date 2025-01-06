@@ -1,8 +1,6 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
-ft_otp_gui/
-
 *~
 *.autosave
 *.a

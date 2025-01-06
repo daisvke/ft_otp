@@ -1,7 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
+#include <stdexcept>
+
+#include "TOTPGenerator.hpp"
+#include "FileHandler.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

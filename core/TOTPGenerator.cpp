@@ -15,20 +15,20 @@ uint8_t TOTPGenerator::isValidHexOrBase32(const std::string &str)
     {
         /*
          * Check for valid hex characters using bitwise operations.
-         * 
+         *
          * Bitwise operations are faster than other operations because they
          * operate directly on binary digits at the hardware level.
-         * 
+         *
          * Here, keyFormat & OTP_KEYFORMAT_HEX is checking if OTP_KEYFORMAT_HEX
          * flag is set in keyFormat.
          *  Ex.: keyFormat (00000001) & OTP_KEYFORMAT_HEX (00000001) = 00000001 (flag is set)
-         * 
+         *
          * On the other hand, keyFormat ^= OTP_KEYFORMAT_HEX will toggle the
          * OTP_KEYFORMAT_HEX flag in keyFormat.
          *  Ex.: keyFormat (00000001) ^⁼ OTP_KEYFORMAT_HEX (00000001)
          *      <=> keyFormat (00000001) = keyFormat ^ OTP_KEYFORMAT_HEX (00000001)
          *      = 00000000 (unset OTP_KEYFORMAT_HEX in keyFormat)
-         * 
+         *
          */
         if ((keyFormat & OTP_KEYFORMAT_HEX) && !std::isxdigit(c))
             keyFormat ^= OTP_KEYFORMAT_HEX;
@@ -136,7 +136,7 @@ std::vector<uint8_t> decodeBase32RFC4648(const std::string &base32String)
     for (char c : base32String)
     {
         if (c == '=')   // Padding character
-            break;      // Padding character means we have reached the end of the key 
+            break;      // Padding character means we have reached the end of the key
 
         size_t index = base32Alphabet.find(std::toupper(c));
         if (index == std::string::npos)
@@ -280,7 +280,7 @@ CryptoPP::SecByteBlock TOTPGenerator::computeCounter(uint64_t timeStep)
 }
 
 std::string TOTPGenerator::generateTOTPHmacSha1(
-    const std::string &hexKey, uint64_t timeStep, int digits)
+    const std::string &userKey, uint64_t timeStep, int digits)
 {
     std::string otpString = ""; // The TOTP code to return
 
@@ -288,7 +288,7 @@ std::string TOTPGenerator::generateTOTPHmacSha1(
     {
         // 'hexKey' is the shared secret between client and server;
         // each HOTP generator has a different and unique secret.
-        CryptoPP::SecByteBlock decodedKey = DecodeKey(hexKey);
+        CryptoPP::SecByteBlock decodedKey = DecodeKey(userKey);
 
         /*
          * Generate the 'counter' needed by HMAC.

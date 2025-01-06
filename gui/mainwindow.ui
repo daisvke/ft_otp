@@ -14,68 +14,130 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="labelKey">
+   <widget class="QGroupBox" name="boxTOTP">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>90</y>
-      <width>58</width>
-      <height>15</height>
+      <x>10</x>
+      <y>130</y>
+      <width>511</width>
+      <height>111</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Key:</string>
+    <property name="title">
+     <string>TOTP</string>
     </property>
+    <widget class="QPushButton" name="btnGenerate">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>80</y>
+       <width>131</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Generate</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelTOTP">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>30</y>
+       <width>41</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TOTP:</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineTOTP">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>30</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="TOTPErrorLabel">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>50</y>
+       <width>331</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
-   <widget class="QLabel" name="labelTOTP">
+   <widget class="QGroupBox" name="boxKey">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>150</y>
-      <width>58</width>
-      <height>15</height>
+      <x>10</x>
+      <y>30</y>
+      <width>511</width>
+      <height>91</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TOTP:</string>
+    <property name="title">
+     <string>Hexadecimal Key</string>
     </property>
+    <widget class="QLineEdit" name="lineKey">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>30</y>
+       <width>461</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelKey">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>58</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Key:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="keyErrorLabel">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>60</y>
+       <width>331</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
-   <widget class="QLineEdit" name="txtKey">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>90</y>
-      <width>461</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="txtTOTP">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>150</y>
-      <width>113</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnGenerate">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>190</y>
-      <width>131</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Generate</string>
-    </property>
-   </widget>
+   <zorder>boxKey</zorder>
+   <zorder>boxTOTP</zorder>
   </widget>
  </widget>
  <resources/>
