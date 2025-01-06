@@ -103,6 +103,8 @@ make b32	  // Run with a Base32 secret key
 make bad	  // Run with a bad secret key
 make tests	// Run all tests
 ```
+<img src="screenshots/cli.png" />
+
 
 ### GUI
 ```
@@ -114,6 +116,8 @@ cd gui
 cd gui
 ./build/Desktop_Qt_6_8_1-Debug/ft_otp_gui
 ```
+<img src="screenshots/gui.png" />
+
 
 ## QR Code Generation for TOTP Secrets
 
@@ -147,6 +151,8 @@ This program generates a QR code for a TOTP (Time-based One-Time Password) secre
     - A TOTP URI is created dynamically using the provided secret and project name.
     - The URI is encoded into a QR code using the `qrencode` library.
     - The generated QR code is saved as a PNG file in the current directory.
+
+<img src="screenshots/qrcode.png" />
 
 
 ## Endianness
