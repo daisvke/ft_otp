@@ -2,6 +2,7 @@
 
 ## Description
 This is a program that allows you to store an initial password in an encrypted file and that is capable of generating a new TOTP one time password every time it is requested.<br />
+It has a CLI (Command Line Interface), and a GUI (Graphical User Interface) version.
 
 ### Secret key
 * The `keys` folder contains a set of valid and invalid keys (for testing purpose). The valid keys are: `key.hex`, `key.base32`.
@@ -35,8 +36,11 @@ sudo apt install libpng-dev
 ```
 
 ## Commands
+
+### CLI
 ```
 // Install
+cd cli
 make
 
 // Usage: ./ft_otp [OPTIONS] <key file>
@@ -100,6 +104,16 @@ make bad	  // Run with a bad secret key
 make tests	// Run all tests
 ```
 
+### GUI
+```
+// Run the GUI
+cd gui
+./run.sh
+
+// Or
+cd gui
+./build/Desktop_Qt_6_8_1-Debug/ft_otp_gui
+```
 
 ## QR Code Generation for TOTP Secrets
 
@@ -190,7 +204,8 @@ static const char base32[] = {
 ## Graphic User Interface
 
 ### Install Qt Creator
-Install the latest open source free version of Qt from the <a href="https://www.qt.io/download-qt-installer-oss">official website</a>.
+* We used Qt Creator (Qt6) in order to create the GUI.
+* Install the latest open source free version of Qt from the <a href="https://www.qt.io/download-qt-installer-oss">official website</a>.
 
 
 ## Trouble shooting
