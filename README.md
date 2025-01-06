@@ -152,7 +152,7 @@ This program generates a QR code for a TOTP (Time-based One-Time Password) secre
     - The URI is encoded into a QR code using the `qrencode` library.
     - The generated QR code is saved as a PNG file in the current directory.
 
-<img src="screenshots/qrcode.png" />
+<img src="screenshots/qr.png" />
 
 
 ## Endianness

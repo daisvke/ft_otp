@@ -2,7 +2,7 @@
 
 # Test files
 ft_otp.key
-*.png
+qrcode.png
 ft_otp
 
 # Temp files
