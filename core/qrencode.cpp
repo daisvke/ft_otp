@@ -16,7 +16,7 @@
  * For a scale of 10 and margin of 4 modules,
  * it will be sufficiently large and compatible with most QR code scanners.
  */
-void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale) {
+void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale = OTP_QRCODE_SCALE) {
     // Define Dimensions for the image
     int size = qrcode->width;
     int png_width = size * scale; // Factor to scale up each QR code module for better readability.
@@ -85,23 +85,29 @@ void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale) {
      * Outer loop (y): Iterates over rows.
      * Inner loop (x): Iterates over pixels in the row.
      */
-    for (int y = 0; y < total_size; ++y) {
-        for (int x = 0; x < total_size; ++x) {
-            // Determine if the pixel is within the QR code area.
-            int module_x = (x - margin) / scale;
-            int module_y = (y - margin) / scale;
 
-            // Determine if the current pixel corresponds to a black module.
-            bool isModule = (module_x >= 0 && module_x < size &&
-                             module_y >= 0 && module_y < size &&
-                             (qrcode->data[module_y * size + module_x] & 0x01));
+	for (int y = 0; y < total_size; ++y) {
+		for (int x = 0; x < total_size; ++x) {
+			if (x < margin || x >= total_size - margin ||
+				y < margin || y >= total_size - margin)
+			{
+				row[x] = 0xFF; // White border
+			} else {
+            	// Determine if the pixel is within the QR code area.
+				int module_x = (x - margin) / scale;
+				int module_y = (y - margin) / scale;
 
-            // Set pixel color (black: 0x00, white: 0xFF).
-            row[x] = isModule ? 0x00 : 0xFF; // Black or white
-        }
+				bool isModule = (module_x >= 0 && module_x < size &&
+								 module_y >= 0 && module_y < size &&
+								 (qrcode->data[module_y * size + module_x] & 0x01));
+
+            	// Set pixel color (black: 0x00, white: 0xFF).
+				row[x] = isModule ? 0x00 : 0xFF;
+			}
+		}
         // Write the row to the PNG file.
-        png_write_row(png, row);
-    }
+		png_write_row(png, row);
+	}
 
     free(row);
 
@@ -171,7 +177,7 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
             std::string filetype = ".png";
             std::string filename = OTP_QRCODE_FILE + filetype;
 
-            saveQRCodeAsPNG(qrcode, filename.c_str(), OTP_QRCODE_SCALE);
+            saveQRCodeAsPNG(qrcode, filename.c_str());
             QRcode_free(qrcode);
         } else {
             throw OpenFileException();

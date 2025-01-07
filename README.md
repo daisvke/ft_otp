@@ -120,10 +120,15 @@ cd gui
 
 
 ## QR Code Generation for TOTP Secrets
-* QR codes can be generated from command line (for testing)
+* QR codes can be generated and read from command line for testing:
 ```
+// Generate QR code image
 sudo apt install qrencode
-qrencode -o qrcode.png keys/key.hex
+qrencode -o qrcode.png $(cat keys/key.hex)
+
+// Read QR code image
+sudo apt install zbar-tools
+zbarimg qrcode.png
 ```
 * This program generates a QR code for a TOTP (Time-based One-Time Password) secret, saving it as a PNG image file. The process involves creating a QR code based on the **Key URI Format**, which can be scanned by standard QR code readers for seamless OTP setup.
 
