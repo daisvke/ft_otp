@@ -27,12 +27,16 @@ pkg install cryptopp
 Used for producing QRcodes.
 ```
 sudo apt install libqrencode-dev
+// Or, on Termux
+pkg install libqrencode
 ```
 
 * PNG Library
 Used for producing QRcodes.
 ```
 sudo apt install libpng-dev
+// Or, on Termux
+pkg install libpng
 ```
 
 ## Commands

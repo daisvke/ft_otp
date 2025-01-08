@@ -21,6 +21,9 @@ void	generateQRCode(const std::string& totpURI, const std::string& filename);
 QRcode *generateQRCodeFromURI(const std::string secret, bool verbose);
 void	generateQRcodePNGFromSecret(const std::string secret, bool verbose);
 
+
+// Exceptions
+
 class QRCodeGenerationException: public std::exception
 {
 public:

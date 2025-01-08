@@ -52,8 +52,6 @@ void printQRCode(QRcode *qrcode, int scale = 1) {
 /*
  * The generated output file should have a size of:
  *  (QR_width×scale+2×margin)×(QR_width×scale+2×margin).
- * For a scale of 10 and margin of 4 modules,
- * it will be sufficiently large and compatible with most QR code scanners.
  */
 void saveQRCodeAsPNG(QRcode *qrcode, const char *filename, int scale = OTP_QRCODE_SCALE) {
     // Define Dimensions for the image
@@ -218,14 +216,15 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
             std::string filetype = ".png";
             std::string filename = OTP_QRCODE_FILE + filetype;
 
-			printQRCode(qrcode); // Print the QR code on the terminal
+			if (verbose)
+				printQRCode(qrcode); // Print the QR code on the terminal
             saveQRCodeAsPNG(qrcode, filename.c_str()); // Save the QR code as PNG
 			if (verbose)
 				std::cout << FMT_DONE " Saved QR code as PNG file: '"
 					<< filename << "'." << std::endl;
             QRcode_free(qrcode);
         } else {
-            throw OpenFileException();
+            throw QRCodeGenerationException();
         }
     }
     catch (std::exception &e)
