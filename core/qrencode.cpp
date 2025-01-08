@@ -10,6 +10,43 @@
  *  - The generated QR code is saved as a PNG file in the current directory.
  */
 
+void printQRCode(QRcode *qrcode, int scale = 1) {
+    // Define Dimensions for the image
+    int size = qrcode->width;
+    int png_width = size * scale; // Factor to scale up each QR code module for better readability.
+    int margin = 1 * scale; // Space around the QR code, scaled for better readability.
+    int total_size = png_width + 2 * margin; // Total width size of the PNG image (square)
+
+    /*
+     * Fill and write each row
+     *
+     * Outer loop (y): Iterates over rows.
+     * Inner loop (x): Iterates over pixels in the row.
+     */
+
+	for (int y = 0; y < total_size; ++y) {
+		for (int x = 0; x < total_size; ++x) {
+			if (x < margin || x >= total_size - margin ||
+				y < margin || y >= total_size - margin)
+			{
+				std::cout << "█"; // White border
+			} else {
+            	// Determine if the pixel is within the QR code area.
+				int module_x = (x - margin) / scale;
+				int module_y = (y - margin) / scale;
+
+				bool isModule = (module_x >= 0 && module_x < size &&
+								 module_y >= 0 && module_y < size &&
+								 (qrcode->data[module_y * size + module_x] & 0x01));
+
+            	// Set pixel color (black: 0x00, white: 0xFF).
+				isModule ? std::cout << " " : std::cout << "█";
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
 /*
  * The generated output file should have a size of:
  *  (QR_width×scale+2×margin)×(QR_width×scale+2×margin).
@@ -169,15 +206,21 @@ QRcode *generateQRCodeFromURI(const std::string secret, bool verbose)
 // Create QR code from the secret key
 void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
 {
+	if (verbose)
+		std::cout << FMT_INFO " Generating QR code..." << std::endl;
     try
-    {   
+    { 
         QRcode *qrcode = generateQRCodeFromURI(secret, verbose);
 
         if (qrcode) {
             std::string filetype = ".png";
             std::string filename = OTP_QRCODE_FILE + filetype;
 
-            saveQRCodeAsPNG(qrcode, filename.c_str());
+			printQRCode(qrcode); // Print the QR code on the terminal
+            saveQRCodeAsPNG(qrcode, filename.c_str()); // Save the QR code as PNG
+			if (verbose)
+				std::cout << FMT_DONE " Saved QR code as PNG file: '"
+					<< filename << "'." << std::endl;
             QRcode_free(qrcode);
         } else {
             throw OpenFileException();
