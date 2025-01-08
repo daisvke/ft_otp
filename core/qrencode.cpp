@@ -10,12 +10,14 @@
  *  - The generated QR code is saved as a PNG file in the current directory.
  */
 
+
+// Print the QR code on the terminal
 void printQRCode(QRcode *qrcode, int scale = 1) {
     // Define Dimensions for the image
     int size = qrcode->width;
-    int png_width = size * scale; // Factor to scale up each QR code module for better readability.
+    int width = size * scale; // Factor to scale up each QR code module for better readability.
     int margin = 1 * scale; // Space around the QR code, scaled for better readability.
-    int total_size = png_width + 2 * margin; // Total width size of the PNG image (square)
+    int total_size = width + 2 * margin; // Total width size.
 
     /*
      * Fill and write each row
@@ -39,7 +41,7 @@ void printQRCode(QRcode *qrcode, int scale = 1) {
 								 module_y >= 0 && module_y < size &&
 								 (qrcode->data[module_y * size + module_x] & 0x01));
 
-            	// Set pixel color (black: 0x00, white: 0xFF).
+            	// Print the pixel as an ASCII square.
 				isModule ? std::cout << " " : std::cout << "█";
 			}
 		}
