@@ -54,6 +54,7 @@ std::string FileHandler::getKeyFromInFile()
 	{
 		try {
 			recovered = TOTPGenerator.decryptAES(key);
+			if (recovered.empty()) throw std::exception();
 		} catch (std::exception &e) {
 			std::cerr << FMT_ERROR "Failed to decrypt key from file." << std::endl;
 			return nullptr;
@@ -80,10 +81,11 @@ void FileHandler::saveKeyToOutFile(std::string key)
 	{
 		TOTPGenerator	TOTPGenerator(_verbose);
 		cipher = TOTPGenerator.encryptAES(key);
+		if (cipher.empty()) throw std::exception();
 	}
 	catch (std::exception &e)
 	{
-		std::cerr << FMT_ERROR " while encrypting: " << e.what() << std::endl;
+		throw EncryptionException(e.what());
 	}
 	if (_verbose)
 		std::cout << "\n" << FMT_DONE " Key encrypted and saved." << std::endl;

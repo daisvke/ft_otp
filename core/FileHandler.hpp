@@ -53,6 +53,25 @@ private:
 		~InvalidKeyFormatException() throw() {}
 	};
 
+	class EncryptionException: public std::exception
+	{
+	public:
+		// Constructor that takes a custom message
+		explicit EncryptionException(const std::string& message) throw()
+			: msg("Failed while encrypting: " + message) {}
+
+		// Override the what() method to return the custom message
+		virtual const char* what() const throw() override {
+			return msg.c_str();
+		}
+
+		// Destructor
+		virtual ~EncryptionException() throw() {}
+
+	private:
+    	std::string msg; // Store the error message
+	};
+
 	class OpenFileException : public std::exception
 	{
 	public:
@@ -61,7 +80,7 @@ private:
 			return "Failed to open the file.";
 		}
 		~OpenFileException() throw() {}
-	};
+	};	
 };
 
 #endif

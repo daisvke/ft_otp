@@ -74,4 +74,14 @@ public:
 	CryptoPP::SecByteBlock		computeCounter(uint64_t timeStep);
 };
 
+class TOTPException : public std::exception
+{
+public:
+	TOTPException() throw() {}
+	const char *what() const throw() {
+		return "Failed to  create TOTP.";
+	}
+	~TOTPException() throw() {}
+};
+
 #endif

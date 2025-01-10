@@ -75,7 +75,7 @@ std::string TOTPGenerator::encryptAES(std::string plain)
     catch (const Exception &e)
     {
         std::cerr << FMT_ERROR << " " << e.what() << std::endl;
-        exit(1);
+        return "";
     }
 
     if (_verbose) {
@@ -121,7 +121,7 @@ std::string TOTPGenerator::decryptAES(std::string &cipher)
     catch (const Exception &e)
     {
         std::cerr << FMT_ERROR << " " << e.what() << std::endl;
-        exit(1);
+        return "";
     }
     return recovered;
 }
@@ -370,7 +370,8 @@ std::string TOTPGenerator::generateTOTPHmacSha1(
     }
     catch (const CryptoPP::Exception &e)
     {
-        std::cerr << "Crypto++ exception: " << e.what() << std::endl;
+        throw TOTPException();
+        return "";
     }
 
     return otpString;

@@ -42,6 +42,7 @@ int MainWindow::generate_TOTP(std::string inputKeyStr)
     try {
         TOTP = QString::fromStdString(TOTPGen.generateTOTPHmacSha1(inputKeyStr, 30, 6));
         ui->lineTOTP->setText(TOTP);
+        if (TOTP.isEmpty()) throw std::exception();
     } catch (const std::exception &e) {
         ui->TOTPErrorLabel->setText("Error:  TOTP generation failed.");
         return 1;

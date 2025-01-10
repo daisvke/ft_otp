@@ -230,6 +230,6 @@ void generateQRcodePNGFromSecret(const std::string secret, bool verbose)
     catch (std::exception &e)
     {
         std::cerr << FMT_ERROR " " << e.what() << std::endl;
-        exit(1);
+        throw QRCodeGenerationException();
     }
 }

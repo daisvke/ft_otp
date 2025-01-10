@@ -1,7 +1,7 @@
 #include "ft_otp_cli.hpp"
 
 // Encrypt and save the key to an external file (-g)
-void saveKeyToOutFile(FileHandler *fileHandler, bool qrCode, bool verbose)
+int saveKeyToOutFile(FileHandler *fileHandler, bool qrCode, bool verbose)
 {
 	try
 	{
@@ -20,12 +20,13 @@ void saveKeyToOutFile(FileHandler *fileHandler, bool qrCode, bool verbose)
 	catch (std::exception &e)
 	{
 		std::cerr << FMT_ERROR " " << e.what() << std::endl;
-		exit(1);
+		return ERROR;
 	}
+	return SUCCESS;
 }
 
 // Generate the TOTP key from the given secret key (-k)
-void generateTOTPKey(FileHandler *filehandler, bool verbose)
+int generateTOTPKey(FileHandler *filehandler, bool verbose)
 {
 	std::string TOTPKey;
 	try
@@ -35,15 +36,18 @@ void generateTOTPKey(FileHandler *filehandler, bool verbose)
 		// Generate the TOTP code
 		TOTPGenerator		TOTPGenerator(verbose);
 		TOTPKey = TOTPGenerator.generateTOTPHmacSha1(key);
+        if (TOTPKey.empty()) throw std::exception();
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << FMT_ERROR " " << e.what() << std::endl;
-		exit(1);
+		return ERROR;
 	}
 	if (verbose)
 		std::cout << "\n" FMT_DONE " Generated TOTP key: " << std::endl;
 	std::cout << TOTPKey << std::endl;
+
+	return SUCCESS;
 }
 
 int main(int argc, char *argv[])
@@ -70,11 +74,11 @@ int main(int argc, char *argv[])
 	if (mode & OTP_MODE_SAVE_KEY)
 	{
 		bool	qrCode = mode & OTP_MODE_GEN_QR; // Check if QR code flag is set
-		saveKeyToOutFile(&fileHandler, qrCode, verbose);
+		if (saveKeyToOutFile(&fileHandler, qrCode, verbose) == ERROR) return 1;
 	}
 	else
 	{ // If we are in '-k' mode, we will retrieve that key and produce a TOTP code
-		generateTOTPKey(&fileHandler, verbose);
+		if (generateTOTPKey(&fileHandler, verbose) == ERROR) return 1;
 	}
 
 	return 0;
