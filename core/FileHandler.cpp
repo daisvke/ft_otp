@@ -31,10 +31,7 @@ bool isRegularFile(const std::string& path) {
 
 std::string FileHandler::getKeyFromInFile()
 {
-    if (!isRegularFile(_fileName)) {
-		std::cerr << FMT_ERROR " Argument is not a regular file." << std::endl;
-		exit(1);
-	}
+    if (!isRegularFile(_fileName)) throw OpenFileException();
 
 	// Create a file stream object for reading from the file
 	std::ifstream file(_fileName);
