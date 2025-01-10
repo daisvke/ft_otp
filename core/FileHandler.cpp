@@ -23,8 +23,19 @@ uint8_t FileHandler::getMode(void) const { return _mode; }
  *  - In `-g` mode, the read key.
  *  - In `-k` mode, the recovered key.
  */
+
+bool isRegularFile(const std::string& path) {
+    struct stat buffer;
+    return (stat(path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
+}
+
 std::string FileHandler::getKeyFromInFile()
 {
+    if (!isRegularFile(_fileName)) {
+		std::cerr << FMT_ERROR " Argument is not a regular file." << std::endl;
+		exit(1);
+	}
+
 	// Create a file stream object for reading from the file
 	std::ifstream file(_fileName);
 	if (_verbose)
@@ -72,7 +83,6 @@ void FileHandler::saveKeyToOutFile(std::string key)
 	{
 		TOTPGenerator	TOTPGenerator(_verbose);
 		cipher = TOTPGenerator.encryptAES(key);
-		// TOTPGenerator::decryptAES(cipher);
 	}
 	catch (std::exception &e)
 	{

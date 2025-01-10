@@ -8,8 +8,8 @@
 # ==========================
 
 NAME				=	ft_otp
-CXX					=	clang++
-CXXFLAGS			=	-std=c++11 -Wall -Wextra -Werror
+CXX					=	g++
+CXXFLAGS			=	-g -std=c++11 -Wall -Wextra -Werror
 LDFLAGS				=	-lcryptopp -lqrencode -lpng
 RM					=	rm -rf
 

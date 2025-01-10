@@ -4,6 +4,7 @@
 # include <iostream>
 # include <fstream>
 # include <stdexcept>
+# include <sys/stat.h>
 
 # include "ascii_format.hpp"
 # include "TOTPGenerator.hpp"
