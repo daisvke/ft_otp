@@ -1,7 +1,7 @@
 # ft_otp
 
 ## Description
-This program allows you to securely store an initial password in an encrypted file and generate a new TOTP (Time-based One-Time Password) every time it is requested. It provides both a CLI (Command Line Interface) and a GUI (Graphical User Interface) version.
+This program allows you to securely store an initial password in an encrypted file and generate a new TOTP (Time-based One-Time Password) every time it is requested. It provides both a CLI (Command Line Interface) and a GUI (Graphical User Interface) version made with Qt Creator.
 
 ---
 
