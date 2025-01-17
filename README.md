@@ -247,13 +247,6 @@ lscpu | grep Order    # Output: Byte Order: Little Endian
 
 ---
 
-### Decoding Base32
-Initial decoding attempts with `Base32Decoder` didn’t match `oathtool` results. The issue stemmed from:
-- Padding differences.
-- Base32Decoder’s use of a different character set (e.g., DUDE encoding).
-
----
-
 ### GUI Development
 The GUI was developed using **Qt Creator (Qt6)**.  
 Install the latest version of Qt from the [official website](https://www.qt.io/download-qt-installer-oss).
