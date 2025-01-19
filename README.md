@@ -109,20 +109,6 @@ make tests	// Run all tests
 ```
 <img src="screenshots/cli.png" />
 
-
-### GUI
-```
-// Run the GUI
-cd gui
-./run.sh
-
-// Or
-cd gui
-./build/Desktop_Qt_6_8_1-Debug/ft_otp_gui
-```
-<img src="screenshots/gui.png" />
-
-
 ## QR Code Generation for TOTP Secrets
 * QR codes can be generated and read from command line for testing:
 ```
@@ -225,10 +211,37 @@ static const char base32[] = {
 
 ## Graphic User Interface
 
+<img src="screenshots/gui.png" />
+
 ### Install Qt Creator
 * We used Qt Creator (Qt6) in order to create the GUI.
 * Install the latest open source free version of Qt from the <a href="https://www.qt.io/download-qt-installer-oss">official website</a>.
 
+### Build project using CMake
+#### Install CMake
+In addition to the packages downloaded by the online Qt installer, we had to install the following packages to make CMake work:
+```bash
+sudo apt-get install cmake
+sudo apt-get install qtbase5-dev
+sudo apt-get install qtdeclarative5-dev
+```
+
+#### Building
+```bash
+# Remove the existing build folder if any
+rm -rf build
+# Create a new build folder in which the project will be built
+mkdir build
+cd build
+# Generate into the build folder the build files using the CMake configuration files in the parent folder 
+cmake ..
+# Build the project
+cmake --build .
+
+# Clean
+cmake --build . --target clean
+rm -rf CMakeFiles CMakeCache.txt
+```
 
 ## Trouble shooting
 

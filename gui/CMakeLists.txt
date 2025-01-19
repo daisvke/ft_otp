@@ -42,12 +42,14 @@ else()
     if(ANDROID)
         add_library(ft_otp_gui SHARED
             ${PROJECT_SOURCES}
+        	${CORE_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(ft_otp_gui
             ${PROJECT_SOURCES}
+        	${CORE_SOURCES}
         )
     endif()
 endif()
