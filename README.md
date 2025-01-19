@@ -233,9 +233,9 @@ cmake ..
 # Build the project
 cmake --build .
 
-# Clean
-cmake --build . --target clean
-rm -rf CMakeFiles CMakeCache.txt
+# Clean (to be executed from 'gui/' folder)
+make clean  # Soft clean
+make fclean # Force clean
 ```
 
 ### Endianness
