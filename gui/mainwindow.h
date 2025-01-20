@@ -2,6 +2,7 @@
 # define MAINWINDOW_H
 # include <QMainWindow>
 # include <stdexcept>
+# include <QDebug>
 
 # include "TOTPGenerator.hpp"
 # include "FileHandler.hpp"
@@ -29,4 +30,5 @@ private slots:
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H

@@ -223,6 +223,7 @@ sudo apt-get install qtdeclarative5-dev
 
 #### Building
 ```bash
+cd gui
 # Remove the existing build folder if any
 rm -rf build
 # Create a new build folder in which the project will be built
@@ -233,9 +234,12 @@ cmake ..
 # Build the project
 cmake --build .
 
+# Or to build inside the gui/ folder, simply do:
+sudo make install
+
 # Clean (to be executed from 'gui/' folder)
-make clean  # Soft clean
-make fclean # Force clean
+make clean
+rm CMakeCache.txt CMakeFiles
 ```
 
 ### Endianness

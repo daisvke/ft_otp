@@ -70,6 +70,7 @@ void MainWindow::generate_QRCode(std::string inputKeyStr)
 
             // Convert the QImage to QPixmap for display
             QPixmap pixmap = QPixmap::fromImage(image);
+            if (!pixmap) throw QRCodeGenerationException();
 
             // Set the QPixmap on the corresponding QLabel
             ui->QRLabel->setPixmap(
@@ -78,7 +79,7 @@ void MainWindow::generate_QRCode(std::string inputKeyStr)
 
             // Free the QR code memory
             QRcode_free(qr);
-        }
+        } else throw QRCodeGenerationException();
     }
     catch (const std::exception &e)
     {
