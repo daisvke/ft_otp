@@ -221,7 +221,7 @@ sudo apt-get install qtbase5-dev
 sudo apt-get install qtdeclarative5-dev
 ```
 
-#### Building
+#### Building & Cleaning
 ```bash
 cd gui
 # Remove the existing build folder if any
@@ -240,6 +240,13 @@ sudo make install
 # Clean (to be executed from 'gui/' folder)
 make clean
 rm CMakeCache.txt CMakeFiles
+```
+
+### Running
+This repository already contains a binary of the GUI.
+```
+cd gui
+./ft_otp_gui
 ```
 
 ### Endianness
