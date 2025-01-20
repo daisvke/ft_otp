@@ -19,6 +19,8 @@ set(CORE_SOURCES
         ../core/FileHandler.hpp
         ../core/qrencode.cpp
         ../core/qrencode.hpp
+        ../core/qrgenerator.cpp
+        ../core/qrgenerator.hpp
 )
 
 set(PROJECT_SOURCES
