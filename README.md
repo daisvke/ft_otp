@@ -98,7 +98,7 @@ make && ./ft_otp -g keys/key.base32 && ./ft_otp ft_otp.key -k
 make && ./ft_otp -g keys/key.base32hex && ./ft_otp ft_otp.key -k
 ```
 
-#### Predefined Makefile recipes:
+##### Predefined Makefile recipes:
 ```bash
 make hex    # Run with a Hex key
 make b32    # Run with a Base32 key
@@ -114,7 +114,7 @@ make tests  # Run all tests
 This program can generate a QR code containing the secret to be shared with other applications.<br />
 QR codes simplify sharing TOTP secrets by encoding them in a scannable format.
 
-#### To compare with the original QR code standards:
+#### To compare with the QR code standards:
 1. **Generate a QR Code:**
    ```bash
    qrencode -o qrcode.png $(cat keys/key.hex)
