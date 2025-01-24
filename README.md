@@ -5,19 +5,6 @@ This program allows you to securely store an initial password in an encrypted fi
 
 ---
 
-### Secret Key
-- The `keys` folder contains a set of valid and invalid keys (for testing purposes). 
-  - Valid keys: `key.hex`, `key.base32`.
-- The secret key file **must not end with a newline character**. To ensure this:
-  ```bash
-  echo -n <key_string> > <key_file>
-  ```
-- Keys must:
-  - Be in **Hex** or **Base32** format.
-  - Contain at least **64 characters**.
-
----
-
 ## Requirements
 ### 1. **Crypto++ Library**
 Used for performing HMAC-SHA1 operations.
@@ -45,6 +32,17 @@ sudo apt install libpng-dev
 # Install on Termux
 pkg install libpng
 ```
+
+### Secret Key
+- The `keys` folder contains a set of valid and invalid keys (for testing purposes). 
+  - Valid keys: `key.hex`, `key.base32`.
+- The secret key file **must not end with a newline character**. To ensure this:
+  ```bash
+  echo -n <key_string> > <key_file>
+  ```
+- Keys must:
+  - Be in **Hex** or **Base32** format.
+  - Contain at least **64 characters**.
 
 ---
 
@@ -88,7 +86,7 @@ Options:
    oathtool --totp -b $(cat keys/key.base32) -v   # Base32 key
    ```
 
-#### Predefined Usage:
+#### Testing
 ```bash
 # With a Hex key
 make && ./ft_otp -g keys/key.hex && ./ft_otp ft_otp.key -k
@@ -100,7 +98,7 @@ make && ./ft_otp -g keys/key.base32 && ./ft_otp ft_otp.key -k
 make && ./ft_otp -g keys/key.base32hex && ./ft_otp ft_otp.key -k
 ```
 
-#### Testing:
+#### Predefined Makefile recipes:
 ```bash
 make hex    # Run with a Hex key
 make b32    # Run with a Base32 key
@@ -113,9 +111,10 @@ make tests  # Run all tests
 ---
 
 ## QR Code Generation for TOTP Secrets
+This program can generate a QR code containing the secret to be shared with other applications.<br />
 QR codes simplify sharing TOTP secrets by encoding them in a scannable format.
 
-#### Steps:
+#### To compare with the original QR code standards:
 1. **Generate a QR Code:**
    ```bash
    qrencode -o qrcode.png $(cat keys/key.hex)
@@ -125,16 +124,6 @@ QR codes simplify sharing TOTP secrets by encoding them in a scannable format.
    zbarimg qrcode.png
    ```
 
-#### QR Code Key URI Format:
-The QR code encodes the secret as a URI:
-```
-otpauth://totp/<PROJECT_NAME>:<USER_EMAIL>?secret=<SECRET>&issuer=<PROJECT_NAME>
-```
-- Example:
-  ```
-  otpauth://totp/MyService:myuser@example.com?secret=BASE32SECRET&issuer=MyService
-  ```
-
 ---
 
 ## Technical Notes
@@ -143,10 +132,6 @@ otpauth://totp/<PROJECT_NAME>:<USER_EMAIL>?secret=<SECRET>&issuer=<PROJECT_NAME>
 
 #### 1. QR Code Dimensions and Scaling:
 - The QR code is generated with scaled-up resolution for better readability.
-- **Image Dimensions**:
-  ```
-  (QR_width × scale + 2 × margin) × (QR_width × scale + 2 × margin)
-  ```
 
 #### 2. PNG File Creation:
 - **libpng** is used to create a grayscale PNG file.
@@ -154,7 +139,7 @@ otpauth://totp/<PROJECT_NAME>:<USER_EMAIL>?secret=<SECRET>&issuer=<PROJECT_NAME>
   - **White pixels** fill the rest (`0xFF`).
 
 #### 3. Key URI Format:
-- Encodes a TOTP URI in the following format:
+- We use a TOTP URI in the following format:
   ```
   otpauth://totp/<PROJECT_NAME>:<USER_EMAIL>?secret=<SECRET>&issuer=<PROJECT_NAME>
   ```
@@ -166,12 +151,13 @@ otpauth://totp/<PROJECT_NAME>:<USER_EMAIL>?secret=<SECRET>&issuer=<PROJECT_NAME>
 #### 4. Steps for QR Code Generation:
 - A TOTP URI is dynamically created using the provided secret and project name.
 - The URI is encoded into a QR code using the **qrencode** library.
-- The resulting QR code is saved as a PNG file in the current directory.
+- The resulting QR code is saved as a PNG file in the current directory and can be also printed on the terminal.
 
 ---
 
 ### Decoding Base32 to Raw Bytes
 
+In the process of TOTP generation, Base32 decoding is mandatory to get the intermediate key value in the right format.<br />
 Initially, Base32 decoding was attempted with `Base32Decoder`:
 
 ```cpp
@@ -184,7 +170,7 @@ decoder.Get(decodedKey, size);
 ```
 
 However, the decoded output did not match the output of `oathtool --totp -b $(cat key.base32) -v`.  
-This led to the hypothesis that differences in padding (`=`) might cause discrepancies, but adding or removing padding didn’t affect either implementation.
+This led to the hypothesis that differences in the existence of a padding (`=`) in our original key might cause discrepancies, but adding or removing padding didn’t affect either implementation.
 
 #### Findings:
 The key difference between our implementation (`decodeBase32RFC4648()`) and `oathtool` likely stems from strict adherence to [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648#section-6). Specifically:
@@ -201,8 +187,8 @@ static const char base32[] = {
   50, 51, 52, 53, 54, 55, 56, 57                          // 2-9
 };
 ```
-
-The mismatch between the DUDE and RFC 4648 Base32 decoding caused inconsistencies in the generated TOTP.
+However, RFC 4648 decoding is only using `2-7` as numerical values.<br />
+This mismatch between the DUDE and RFC 4648 Base32 decoding caused inconsistencies in the generated TOTP.
 
 ## Graphic User Interface
 
@@ -220,6 +206,7 @@ sudo apt-get install cmake
 sudo apt-get install qtbase5-dev
 sudo apt-get install qtdeclarative5-dev
 ```
+It should be noted that we only found the Qt5 packages for our system but Qt6 versions would've been best suited.
 
 #### Building & Cleaning
 ```bash
@@ -271,12 +258,6 @@ lscpu | grep Order    # Output: Byte Order: Little Endian
 
 #### Key Format:
 - Always 6 digits.
-
----
-
-### GUI Development
-The GUI was developed using **Qt Creator (Qt6)**.  
-Install the latest version of Qt from the [official website](https://www.qt.io/download-qt-installer-oss).
 
 ---
 
