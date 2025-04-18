@@ -7,6 +7,7 @@ It provides both a CLI (Command Line Interface) and a GUI (Graphical User Interf
 ---
 
 ## Requirements
+
 ### 1. **Crypto++ Library**
 Used for performing HMAC-SHA1 operations.
 ```bash
@@ -32,6 +33,20 @@ Used for QR code generation.
 sudo apt install libpng-dev
 # Install on Termux
 pkg install libpng
+```
+
+### 3. **libssl-dev**
+Used for OpenSSL.
+
+```bash
+# Install on Ubuntu
+sudo apt install libssl-dev
+```
+
+### Full command on Linux
+```bash
+# Replace `X` accordingly
+sudo apt install make g++ libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc libqrencode-dev libpng-dev libssl-dev -y
 ```
 
 ### Secret Key
