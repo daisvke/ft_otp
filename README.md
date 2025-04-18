@@ -86,7 +86,7 @@ Options:
 #### Examples:
 1. **Generate and save an encrypted key with a QR code:**
    ```bash
-   ./ft_otp -gk <key_file>
+   ./ft_otp -gq <key_file>
    ```
    - The key is stored in an encrypted file named `ft_otp.key` using AES encryption.
 
@@ -98,6 +98,7 @@ Options:
 
 3. **Verify the TOTP code using `oathtool`:**
    ```bash
+   sudo apt install oathtool -y
    oathtool --totp $(cat keys/key.hex) -v    # Hex key
    oathtool --totp -b $(cat keys/key.base32) -v   # Base32 key
    ```
