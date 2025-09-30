@@ -73,19 +73,15 @@ $(OBJS_DIR)%.o: %.cpp $(INCS)
 	@echo "$(CXX) $(INCS) $(CXXFLAGS) -c $<"; \
 		$(CXX) $(CXXFLAGS) -c $< -o $@ || \
 		{	echo "\n$(ERROR) Compilation failed for $<."; \
-			echo "$(INFO) Possible reason: Crypto++ library is not installed or correctly linked."; \
+			echo "$(INFO) Possible reason: libraries are not installed or correctly linked."; \
 			echo "$(INFO)"; \
-			echo "$(INFO) To install the library on Ubuntu/Debian-based systems:"; \
+			echo "$(INFO) To install the libraries on Ubuntu/Debian-based systems:"; \
 			echo "$(INFO)"; \
-			echo "$(INFO) First, check the available packages for your system:"; \
-			echo "$(INFO) \t\tapt search libcrypto++"; \
-			echo "$(INFO) Or, on Termux:"; \
-			echo "$(INFO) \t\tpkg search cryptopp"; \
+			echo "$(INFO) First, check the available Crypto++ packages for your system:"; \
+			echo "$(INFO) \tapt search libcrypto++"; \
 			echo "$(INFO)"; \
 			echo "$(INFO) Replace 'X' by the version you've found during the previous step:"; \
-			echo "$(INFO) \t\tsudo apt install libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc"; \
-			echo "$(INFO) Or, on Termux:"; \
-			echo "$(INFO) \t\tpkg install cryptopp\n"; \
+			echo "$(INFO) \tsudo apt install libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc libqr4encode-dev libpng-dev libssl-dev -y"; \
 			exit 1;}
 
 

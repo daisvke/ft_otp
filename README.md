@@ -35,7 +35,7 @@ sudo apt install libpng-dev
 pkg install libpng
 ```
 
-### 3. **libssl-dev**
+### 3. **libssl-dev, openssl**
 Used for OpenSSL.
 
 ```bash
@@ -43,10 +43,18 @@ Used for OpenSSL.
 sudo apt install libssl-dev
 ```
 
+### 4. **For tests**
+These packages are used for the testing part:
+```bash
+# oathtool, qrencode, zbarimg
+sudo apt install oathtool qrencode zbar-tools -y
+
+```
+
 ### Full command on Linux
 ```bash
 # Replace `X` accordingly
-sudo apt install make g++ libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc libqrencode-dev libpng-dev libssl-dev -y
+sudo apt install make g++ libcrypto++X libcrypto++-dev libcrypto++-utils libcrypto++-doc libqrencode-dev libpng-dev libssl-dev oathtool qrencode zbar-tools -y
 ```
 
 ### Secret Key
@@ -98,7 +106,6 @@ Options:
 
 3. **Verify the TOTP code using `oathtool`:**
    ```bash
-   sudo apt install oathtool -y
    oathtool --totp $(cat keys/key.hex) -v    # Hex key
    oathtool --totp -b $(cat keys/key.base32) -v   # Base32 key
    ```
