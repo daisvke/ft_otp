@@ -226,9 +226,7 @@ This mismatch between the DUDE and RFC 4648 Base32 decoding caused inconsistenci
 #### Install CMake
 In addition to the packages downloaded by the online Qt installer, we had to install the following packages to make CMake work:
 ```bash
-sudo apt-get install cmake
-sudo apt-get install qtbase5-dev
-sudo apt-get install qtdeclarative5-dev
+sudo apt-get install cmake qtbase5-dev qtdeclarative5-dev -y
 ```
 It should be noted that we only found the Qt5 packages for our system but Qt6 versions would've been best suited.
 
@@ -256,6 +254,10 @@ rm CMakeCache.txt CMakeFiles
 ### Running
 This repository already contains a binary of the GUI.
 ```
+# Install the necessary Qt6 package
+sudo apt install qt6-base-dev -y
+
+# Go to the GUI folder and run the binary
 cd gui
 ./ft_otp_gui
 ```
