@@ -40,9 +40,9 @@
 # define FMT_BG_WHITE       "\033[47m"
 
 // Log levels
-# define FMT_INFO           FMT_YELLOW "[INFO]"    FMT_RESET
+# define FMT_INFO           FMT_YELLOW  "[INFO]"    FMT_RESET
 # define FMT_WARNING        FMT_MAGENTA "[WARNING]" FMT_RESET
-# define FMT_ERROR          FMT_RED "[ERROR]"      FMT_RESET
-# define FMT_DONE           FMT_GREEN "[DONE]"     FMT_RESET
+# define FMT_ERROR          FMT_RED     "[ERROR]"   FMT_RESET
+# define FMT_DONE           FMT_GREEN   "[DONE]"    FMT_RESET
 
 #endif
